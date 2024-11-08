@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignIn from "./Components/SignIn";
-import DashBoard from "./Components/Dashboard";
+import DashboardLayout from "./Components/Dashboard";
 import "./App.css";
-
+import CreateEvent from "./Components/CreateEvent";
+import IssueCertificate from "./Components/IssueCertificate";
 function App() {
   //   const [loading, setLoading] = useState(false);
 
@@ -18,7 +19,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route index element={<SignIn />} />
-            <Route
+            {/* <Route
               exact
               path="/dashboard"
               element={
@@ -26,7 +27,30 @@ function App() {
                 <DashBoard />
                 // </ProtectedRoute>
               }
-            />
+            /> */}
+
+            <Route exact path="/dashboard-layout" element={<DashboardLayout />}>
+              {/* {/* <Route exact path="analytics" element={<Analytics />}></Route> */}
+
+              <Route
+                exact
+                path="create-event"
+                element={
+                  <>
+                    <CreateEvent />
+                  </>
+                }
+              />
+              <Route
+                exact
+                path="issue-certificate"
+                element={
+                  <>
+                    <IssueCertificate />
+                  </>
+                }
+              />
+            </Route>
           </Routes>
         </BrowserRouter>
 
