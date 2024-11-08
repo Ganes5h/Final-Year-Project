@@ -1,63 +1,18 @@
 import React, { useState } from "react";
-
-// Custom SVG Eye Icons as components
-const EyeIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="w-5 h-5 stroke-current"
-    strokeWidth="2"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
-
-const EyeOffIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="w-5 h-5 stroke-current"
-    strokeWidth="2"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-    <line x1="1" y1="1" x2="23" y2="23" />
-  </svg>
-);
-
-const EmailIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="w-5 h-5 stroke-current"
-    strokeWidth="2"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-    <polyline points="22,6 12,13 2,6" />
-  </svg>
-);
-
-const LockIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="w-5 h-5 stroke-current"
-    strokeWidth="2"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-  </svg>
-);
+import {
+  Shield,
+  CheckCircle,
+  Lock,
+  Mail,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  Timer,
+  HeadphonesIcon,
+} from "lucide-react";
 
 const SignIn = () => {
+  const [showSignIn, setShowSignIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,101 +22,179 @@ const SignIn = () => {
     console.log("Sign in attempted with:", { email, password });
   };
 
+  const features = [
+    {
+      icon: <ShieldCheck className="w-12 h-12 text-blue-600" />,
+      title: "Secure Verification",
+      description: "Industry-leading security protocols",
+    },
+    {
+      icon: <Timer className="w-12 h-12 text-blue-600" />,
+      title: "Quick Certification",
+      description: "Get certified in minutes",
+    },
+    {
+      icon: <HeadphonesIcon className="w-12 h-12 text-blue-600" />,
+      title: "24/7 Support",
+      description: "Round-the-clock expert assistance",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            Welcome back
-          </h1>
-          <p className="text-gray-600">Please sign in to your account</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-left text-sm font-medium text-gray-700 mb-2"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                <EmailIcon />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      {/* Navigation */}
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <div className="flex items-center">
+              <Shield className="w-8 h-8 text-blue-600" />
+              <span className="ml-2 text-2xl font-bold text-gray-800">
+                Secure Certify
               </span>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              />
             </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-left text-sm font-medium text-gray-700 mb-2"
+            <button
+              onClick={() => setShowSignIn(!showSignIn)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
-              Password
-            </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                <LockIcon />
-              </span>
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              />
+              {showSignIn ? "Back to Home" : "Sign In"}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {!showSignIn ? (
+          /* Landing Page Content */
+          <div className="space-y-16">
+            {/* Hero Section */}
+            <div className="text-center space-y-8">
+              <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
+                Secure Certification
+                <span className="text-blue-600"> Made Simple</span>
+              </h1>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Your trusted platform for verified certifications. Fast, secure,
+                and reliable.
+              </p>
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowSignIn(true)}
+                className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
               >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                Get Started Now
               </button>
             </div>
+
+            {/* Features Grid */}
+            <div className="grid md:grid-cols-3 gap-8">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <div className="mb-4 flex justify-center">{feature.icon}</div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
+        ) : (
+          /* Sign In Form */
+          <div className="max-w-md mx-auto bg-white rounded-xl shadow-xl p-8">
+            <div className="text-center mb-8">
+              <Lock className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
+              <p className="text-gray-600">
+                Sign in to your Secure Certify account
+              </p>
+            </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"
-              />
-              <span className="text-sm text-gray-600">Remember me</span>
-            </label>
-            <a
-              href="/"
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Forgot password?
-            </a>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-start text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-start text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-600">
+                    Remember me
+                  </span>
+                </label>
+                <a
+                  href="/"
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  Forgot password?
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
+                Sign In
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Don't have an account?{" "}
+              <a
+                href="/"
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Sign up
+              </a>
+            </p>
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-          >
-            Sign in
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{" "}
-          <a href="/" className="text-blue-600 hover:text-blue-800 font-medium">
-            Sign up
-          </a>
-        </p>
+        )}
       </div>
     </div>
   );
