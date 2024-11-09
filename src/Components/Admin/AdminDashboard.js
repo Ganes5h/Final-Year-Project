@@ -9,6 +9,8 @@ import {
   Badge,
   Typography,
 } from "@mui/material";
+import SecurityIcon from "@mui/icons-material/Security";
+import GroupIcon from "@mui/icons-material/Group";
 import { Outlet, Link } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -19,6 +21,7 @@ import { motion } from "framer-motion";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import SettingsIcon from "@mui/icons-material/Settings";
+import RemoveModeratorIcon from "@mui/icons-material/RemoveModerator";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -26,10 +29,11 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 
-import Logo from "../assets/Logo.png";
+// import Logo from "../assets/Logo.png";
+
 import axios from "axios";
 
-export default function Dashboard() {
+export default function AdminDashboard() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [openPlayground, setOpenPlayground] = React.useState(false);
@@ -45,43 +49,29 @@ export default function Dashboard() {
   const BASE_URL = "k";
 
   const routes = [
-    // {
-    //   path: "/playground",
-    //   label: "Playground",
-    //   submenu: [
-    //     { path: "generate", label: "Aptitude Test", icon: InfoIcon },
-    //     {
-    //       path: "faq",
-    //       label: "Technical Interview Round 1",
-    //       icon: SettingsIcon,
-    //     },
-    //     { path: "faq", label: "Coding/Programming Test", icon: SettingsIcon },
-    //     {
-    //       path: "faq",
-    //       label: "Technical Interview Round 2",
-    //       icon: HomeIcon,
-    //     },
-    //     { path: "faq", label: "HR Interview" },
-    //     {
-    //       path: "faq",
-    //       label: "Managerial/Behavioral ",
-    //     },
-    //   ],
-    // },
-    { path: "analytics", label: "Dashboard", icon: DashboardIcon },
-    // { path: "faq", label: "Reports", icon: BarChartIcon },
+    { path: "admin-analytics", label: "Dashboard", icon: DashboardIcon },
     {
-      path: "create-event",
+      path: "admin-create-event",
       label: "Create Event",
       icon: AssessmentIcon,
     },
     {
-      path: "issue-certificate",
+      path: "admin-mark-attendance",
+      label: "Mark Attendance",
+      icon: GroupIcon,
+    },
+    {
+      path: "admin-issue-certificate",
       label: "Issue Certificate",
-      icon: SettingsIcon,
+      icon: SecurityIcon,
+    },
+    {
+      path: "admin-revoke-certificate",
+      label: "Revoke Certificate",
+      icon: RemoveModeratorIcon,
     },
 
-    { path: "/", label: "Home", icon: HomeIcon },
+    // { path: "/", label: "Home", icon: HomeIcon },
   ];
   const handlePlaygroundClick = () => {
     setOpenPlayground(!openPlayground);
@@ -94,8 +84,7 @@ export default function Dashboard() {
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleLogout = () => {
     handleMenuClose();
-
-    navigate("/login");
+    navigate("/");
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -106,7 +95,9 @@ export default function Dashboard() {
     navigate("/dashboard-layout/billing-status");
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    navigate("/admin/admin-analytics");
+  }, []);
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -135,18 +126,19 @@ export default function Dashboard() {
         <div className="p-4 text-center font-bold text-xl">
           <div className="relative flex items-center">
             <motion.h1
-              className="text-2xl md:text-4xl font-extrabold tracking-wide"
+              className="text-2xl md:text-3xl font-extrabold tracking-wide"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <a href="/" className="inline-flex items-center">
-                <img
+                {/* <img
                   src={Logo}
                   alt="Comany Logo"
                   className="mx-4"
                   width={30}
-                ></img>
+                ></img> */}
+
                 <motion.span
                   // className="text-white"
                   initial={{ letterSpacing: "0.1em" }}
@@ -161,7 +153,7 @@ export default function Dashboard() {
                   animate={{ backgroundPosition: "0% center" }}
                   transition={{ duration: 3, ease: "linear" }}
                 >
-                  C
+                  Certify
                 </motion.span>
               </a>
             </motion.h1>
@@ -205,6 +197,7 @@ export default function Dashboard() {
                   component={Link}
                   to={route.path}
                   className="w-full justify-center hover:bg-blue-100 transition-colors"
+                  style={{ marginTop: "20px" }}
                 >
                   {/* Add icon based on the route type */}
                   {route.icon && <route.icon style={{ marginRight: 8 }} />}
@@ -215,7 +208,7 @@ export default function Dashboard() {
             </React.Fragment>
           ))}
         </List>
-        <div className="flex items-center justify-center">
+        {/* <div className="flex items-center justify-center">
           <motion.button
             className="bg-clip text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 ml-2 p-3 w-48 font-semibold btn-alt"
             style={{
@@ -233,7 +226,7 @@ export default function Dashboard() {
           >
             Practice Interview
           </motion.button>
-        </div>
+        </div> */}
       </aside>
 
       {/* Sidebar Toggle Button for small screens */}
@@ -271,7 +264,7 @@ export default function Dashboard() {
             /> */}
           </div>
           <div className="flex items-center space-x-4">
-            <Typography variant="h6">Welcome,Mane</Typography>
+            <Typography variant="h6">Welcome, Hanmant</Typography>
 
             {/* <Badge badgeContent={4} color="error">
               <NotificationsIcon

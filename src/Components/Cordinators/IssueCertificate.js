@@ -3,8 +3,8 @@ import React from "react";
 function IssueCertificate() {
   return (
     <div>
-      IssueCertificate
-      <p>Dhananjay Mane MC</p>
+      IssueCertificates 
+      
     </div>
   );
 }
