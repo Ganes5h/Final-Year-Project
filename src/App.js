@@ -12,13 +12,7 @@ import MarkAttendance from "./Components/Cordinators/MarkAttendance";
 import Analytics from "./Components/Cordinators/Analytics";
 import RevokeCertificate from "./Components/Cordinators/RevokeCertificate";
 
-//admin imports
-import AdminDashboard from "./Components/Admin/AdminDashboard";
-import AdminCreateEvent from "./Components/Admin/AdminCreateEvent";
-import AdminIssueCertificate from "./Components/Admin/AdminIssueCertificate";
-import AdminMarkAttendance from "./Components/Admin/AdminMarkAttendance";
-import AdminRevokeCertificate from "./Components/Admin/AdminRevokeCertificate";
-import AdminAnalytics from "./Components/Admin/AdminAnalytics";
+
 
 function App() {
   //   const [loading, setLoading] = useState(false);
@@ -93,54 +87,6 @@ function App() {
               />
             </Route>
 
-            {/* Admin Routing */}
-            <Route exact path="/admin" element={<AdminDashboard />}>
-              <Route
-                index
-                path="admin-analytics"
-                element={
-                  <>
-                    <AdminAnalytics />
-                  </>
-                }
-              />
-              <Route
-                index
-                path="admin-mark-attendance"
-                element={
-                  <>
-                    <AdminMarkAttendance />
-                  </>
-                }
-              />
-              <Route
-                exact
-                path="admin-create-event"
-                element={
-                  <>
-                    <AdminCreateEvent />
-                  </>
-                }
-              />
-              <Route
-                exact
-                path="admin-issue-certificate"
-                element={
-                  <>
-                    <AdminIssueCertificate />
-                  </>
-                }
-              />
-              <Route
-                exact
-                path="admin-revoke-certificate"
-                element={
-                  <>
-                    <AdminRevokeCertificate />
-                  </>
-                }
-              />
-            </Route>
           </Routes>
         </BrowserRouter>
 
