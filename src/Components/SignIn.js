@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Shield,
   CheckCircle,
@@ -10,16 +10,80 @@ import {
   Timer,
   HeadphonesIcon,
 } from "lucide-react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Use effect to check if "remember me" data is available in localStorage
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("email");
+    const savedPassword = localStorage.getItem("password");
+
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Sign in attempted with:", { email, password });
+
+    // Reset  loading state
+    setLoading(true);
+
+    const credentials = { email, password };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/api/admin/login",
+        credentials,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Handle successful login
+      console.log("Logged in successfully:", response.data);
+
+      // Save to localStorage if "remember me" is checked
+      if (rememberMe) {
+        localStorage.setItem("email", email);
+        localStorage.setItem("password", password); // Note: In production, avoid saving passwords in localStorage
+      } else {
+        localStorage.removeItem("email");
+        localStorage.removeItem("password");
+      }
+
+      // Redirect to another page or handle user session
+      window.location.href = "/dashboard-layout";
+    } catch (err) {
+      // Handle error
+      if (err.response) {
+        // If the error is from the server (response error)
+        toast.error(
+          err.response.data.message || "Login failed, please try again."
+        );
+      } else if (err.request) {
+        // If no response is received from the server
+        toast.error("Network error. Please try again later.");
+      } else {
+        // If some other error occurred
+        toast.error("An error occurred. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const features = [
@@ -67,7 +131,6 @@ const SignIn = () => {
         {!showSignIn ? (
           /* Landing Page Content */
           <div className="space-y-16">
-            {/* Hero Section */}
             <div className="text-center space-y-8">
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
                 Secure Certification
@@ -85,7 +148,6 @@ const SignIn = () => {
               </button>
             </div>
 
-            {/* Features Grid */}
             <div className="grid md:grid-cols-3 gap-8">
               {features.map((feature, index) => (
                 <div
@@ -162,6 +224,8 @@ const SignIn = () => {
                 <label className="flex items-center">
                   <input
                     type="checkbox"
+                    checked={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-sm text-gray-600">
@@ -178,24 +242,18 @@ const SignIn = () => {
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+                  loading ? "bg-blue-400 cursor-not-allowed" : ""
+                }`}
+                disabled={loading}
               >
-                Sign In
+                {loading ? "Signing in..." : "Sign In"}
               </button>
             </form>
-
-            <p className="mt-6 text-center text-sm text-gray-600">
-              Don't have an account?{" "}
-              <a
-                href="/"
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Sign up
-              </a>
-            </p>
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

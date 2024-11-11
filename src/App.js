@@ -12,8 +12,6 @@ import MarkAttendance from "./Components/Cordinators/MarkAttendance";
 import Analytics from "./Components/Cordinators/Analytics";
 import RevokeCertificate from "./Components/Cordinators/RevokeCertificate";
 
-
-
 function App() {
   //   const [loading, setLoading] = useState(false);
 
@@ -86,7 +84,6 @@ function App() {
                 }
               />
             </Route>
-
           </Routes>
         </BrowserRouter>
 
