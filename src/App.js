@@ -12,6 +12,8 @@ import MarkAttendance from "./Components/Cordinators/MarkAttendance";
 import Analytics from "./Components/Cordinators/Analytics";
 import RevokeCertificate from "./Components/Cordinators/RevokeCertificate";
 
+import ViewEvent from "./Components/Cordinators/ViewEvent";
+
 function App() {
   //   const [loading, setLoading] = useState(false);
 
@@ -56,15 +58,15 @@ function App() {
                   </>
                 }
               />
-              <Route
+              {/* <Route
                 exact
-                path="create-event"
+                path="events"
                 element={
                   <>
                     <CreateEvent />
                   </>
                 }
-              />
+              /> */}
               <Route
                 exact
                 path="issue-certificate"
@@ -80,6 +82,24 @@ function App() {
                 element={
                   <>
                     <RevokeCertificate />
+                  </>
+                }
+              />
+                            <Route
+                exact
+                path="events/create-event"
+                element={
+                  <>
+                    <CreateEvent />
+                  </>
+                }
+              />
+              <Route
+                exact
+                path="events/view-event"
+                element={
+                  <>
+                    <ViewEvent />
                   </>
                 }
               />

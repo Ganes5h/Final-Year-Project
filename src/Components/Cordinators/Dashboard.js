@@ -25,6 +25,8 @@ import RemoveModeratorIcon from '@mui/icons-material/RemoveModerator';
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
@@ -50,11 +52,22 @@ export default function Dashboard() {
 
   const routes = [
     { path: "analytics", label: "Dashboard", icon: DashboardIcon },
+    // {
+    //   path: "events",
+    //   label: "Events",
+    //   icon: AssessmentIcon,
+    // },
+
     {
-      path: "create-event",
-      label: "Create Event",
+      path: "events",
+      label: "Events",
       icon: AssessmentIcon,
+      submenu: [
+        { path: "events/create-event", label: "Create Event", icon: AddCircleIcon },
+        { path: "events/view-event", label: "View Events", icon: EventNoteIcon},
+      ],
     },
+    
     {
       path: "mark-attendance",
       label: "Mark Attendance",
@@ -163,50 +176,51 @@ export default function Dashboard() {
           component="nav"
           className="mt-10 flex flex-col items-center text-center"
         >
-          {routes.map((route, index) => (
-            <React.Fragment key={index}>
-              {route.submenu ? (
-                <>
-                  <ListItem
-                    button
-                    onClick={handlePlaygroundClick}
-                    className="w-full justify-center hover:bg-blue-100 transition-colors text-center items-center"
-                  >
-                    <ListItemText primary={route.label} />
-                    {openPlayground ? <ExpandLess /> : <ExpandMore />}
-                  </ListItem>
-                  <Collapse in={openPlayground} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                      {route.submenu.map((sub, subIndex) => (
-                        <ListItem
-                          button
-                          component={Link}
-                          to={sub.path}
-                          key={subIndex}
-                          className="pl-8 hover:bg-blue-100 transition-colors"
-                        >
-                          <ListItemText primary={sub.label} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Collapse>
-                </>
-              ) : (
-                <ListItem
-                  button
-                  component={Link}
-                  to={route.path}
-                  className="w-full justify-center hover:bg-blue-100 transition-colors"
-                  style={{ marginTop:"20px"}}
-                >
-                  {/* Add icon based on the route type */}
-                  {route.icon && <route.icon style={{ marginRight: 8 }} />}
-                  <ListItemText primary={route.label} />
-                </ListItem>
-              )}
-              <Divider />
-            </React.Fragment>
-          ))}
+{routes.map((route, index) => (
+  <React.Fragment key={index}>
+    {route.submenu ? (
+      <>
+        <ListItem
+          button
+          onClick={handlePlaygroundClick}
+          className="w-full justify-center hover:bg-blue-100 transition-colors text-center items-center"
+        >
+        {route.icon && <route.icon style={{ marginRight: 8 }} />}
+          <ListItemText primary={route.label} />
+          {openPlayground ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+        <Collapse in={openPlayground} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {route.submenu.map((sub, subIndex) => (
+              <ListItem
+                button
+                component={Link}
+                to={sub.path}
+                key={subIndex}
+                className="pl-8 mb-2 hover:bg-blue-100 transition-colors"
+              >
+                {sub.icon && <sub.icon style={{ marginRight: 8 }} />}
+                <ListItemText primary={sub.label} />
+              </ListItem>
+            ))}
+          </List>
+        </Collapse>
+      </>
+    ) : (
+      <ListItem
+        button
+        component={Link}
+        to={route.path}
+        className="w-full justify-center hover:bg-blue-100 transition-colors"
+        style={{ marginTop: "20px" }}
+      >
+        {route.icon && <route.icon style={{ marginRight: 8 }} />}
+        <ListItemText primary={route.label} />
+      </ListItem>
+    )}
+    <Divider />
+  </React.Fragment>
+))}
         </List>
         {/* <div className="flex items-center justify-center">
           <motion.button
