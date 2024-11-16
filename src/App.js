@@ -96,7 +96,7 @@ function App() {
               />
               <Route
                 exact
-                path="events/view-event"
+                path="events/view-events"
                 element={
                   <>
                     <ViewEvent />

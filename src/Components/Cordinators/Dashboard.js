@@ -64,7 +64,7 @@ export default function Dashboard() {
       icon: AssessmentIcon,
       submenu: [
         { path: "events/create-event", label: "Create Event", icon: AddCircleIcon },
-        { path: "events/view-event", label: "View Events", icon: EventNoteIcon},
+        { path: "events/view-events", label: "View Events", icon: EventNoteIcon},
       ],
     },
     
