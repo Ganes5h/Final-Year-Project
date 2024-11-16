@@ -21,6 +21,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import CloseIcon from "@mui/icons-material/Close";
+import BaseUrl from "../../BaseUrl/BaseUrl";
 
 const ViewEvents = () => {
   const [events, setEvents] = useState([]);
@@ -30,9 +31,7 @@ const ViewEvents = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/api/event/allEvents"
-        );
+        const response = await axios.get(`${BaseUrl}/event/allEvents`);
         setEvents(response.data.data.events);
       } catch (error) {
         console.error("Error fetching events:", error);

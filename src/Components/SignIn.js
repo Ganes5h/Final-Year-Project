@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import BaseUrl from "../BaseUrl/BaseUrl";
 
 const SignIn = () => {
   const [showSignIn, setShowSignIn] = useState(false);
@@ -43,15 +44,11 @@ const SignIn = () => {
     const credentials = { email, password };
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/api/admin/login",
-        credentials,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${BaseUrl}/admin/login`, credentials, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       // Handle successful login
       console.log("Logged in successfully:", response.data);
