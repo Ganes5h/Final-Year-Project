@@ -11,6 +11,9 @@ import {
   FormInput,
 } from "lucide-react";
 
+import axios from "axios";
+import BaseUrl from "../../BaseUrl/BaseUrl";
+
 function CreateEvent() {
   // [Previous state and handlers remain the same until the return statement]
   const [eventDetails, setEventDetails] = useState({
@@ -20,8 +23,8 @@ function CreateEvent() {
     startDate: "",
     endDate: "",
     registrationDeadline: "",
-    maxParticipants: "",
-    activityPoints: "",
+    maxParticipants: null,
+    activityPoints: null,
     venue: "",
     whatsappLink: "",
     registrationForm: {
@@ -35,7 +38,19 @@ function CreateEvent() {
   // [All your existing handlers remain the same]
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEventDetails({ ...eventDetails, [name]: value });
+
+    if (
+      name === "startDate" ||
+      name === "endDate" ||
+      name === "registrationDeadline"
+    ) {
+      setEventDetails({
+        ...eventDetails,
+        [name]: value + ":00Z",
+      });
+    } else {
+      setEventDetails({ ...eventDetails, [name]: value });
+    }
   };
 
   const handleFieldChange = (index, e) => {
@@ -83,7 +98,24 @@ function CreateEvent() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(eventDetails);
+
+    // Assuming eventDetails is the original data object
+    const updatedEventDetails = {
+      ...eventDetails,
+      maxParticipants: Number(eventDetails.maxParticipants), // Convert to number
+      activityPoints: Number(eventDetails.activityPoints), // Convert to number
+    };
+
+    console.log(updatedEventDetails);
+
+    axios
+      .post(`${BaseUrl}/event/create`, updatedEventDetails)
+      .then((response) => {
+        console.log("Event created successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error creating the event:", error);
+      });
   };
 
   const togglePreviewModal = () => {
@@ -145,9 +177,13 @@ function CreateEvent() {
               Start Date*
             </label>
             <input
-              type="date"
+              type="datetime-local"
               name="startDate"
-              value={eventDetails.startDate}
+              value={
+                eventDetails.startDate
+                  ? eventDetails.startDate.slice(0, 16)
+                  : ""
+              }
               onChange={handleChange}
               className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               required
@@ -158,9 +194,11 @@ function CreateEvent() {
               End Date*
             </label>
             <input
-              type="date"
+              type="datetime-local"
               name="endDate"
-              value={eventDetails.endDate}
+              value={
+                eventDetails.endDate ? eventDetails.endDate.slice(0, 16) : ""
+              }
               onChange={handleChange}
               className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               required
@@ -174,9 +212,13 @@ function CreateEvent() {
               Registration Deadline*
             </label>
             <input
-              type="date"
+              type="datetime-local"
               name="registrationDeadline"
-              value={eventDetails.registrationDeadline}
+              value={
+                eventDetails.registrationDeadline
+                  ? eventDetails.registrationDeadline.slice(0, 16)
+                  : ""
+              }
               onChange={handleChange}
               className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               required
