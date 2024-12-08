@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
   Card,
   CardContent,
   CardActions,
@@ -27,6 +32,7 @@ const ViewEvents = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -44,9 +50,44 @@ const ViewEvents = () => {
     setShowPreviewModal(!showPreviewModal);
   };
 
-  const handleViewMore = (event) => {
-    setSelectedEvent(event);
-    togglePreviewModal();
+  const handleViewMore = async (event) => {
+    try {
+      // Fetch specific event details by ID
+      const response = await axios.get(
+        `${BaseUrl}/event/eventDetails/${event._id}`
+      );
+      setSelectedEvent(response.data.data.event);
+      togglePreviewModal();
+    } catch (error) {
+      console.error("Error fetching event details:", error);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    // Open delete confirmation modal
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      // Perform delete action
+      await axios.delete(`${BaseUrl}/event/deleteEvent/${selectedEvent._id}`);
+
+      // Remove the deleted event from the events list
+      setEvents(events.filter((event) => event._id !== selectedEvent._id));
+
+      // Close both modals
+      setShowDeleteConfirmModal(false);
+      setShowPreviewModal(false);
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      // Optionally, show an error message to the user
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    // Close delete confirmation modal
+    setShowDeleteConfirmModal(false);
   };
 
   return (
@@ -351,11 +392,13 @@ const ViewEvents = () => {
                     >
                       Edit
                     </Button>
+
                     <Button
                       variant="contained"
                       color="secondary"
                       className="bg-red-500 hover:bg-red-600"
                       startIcon={<TrashIcon className="h-4 w-4" />}
+                      onClick={handleDeleteClick}
                     >
                       Delete
                     </Button>
@@ -366,6 +409,32 @@ const ViewEvents = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Dialog
+        open={showDeleteConfirmModal}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-confirmation-title"
+        aria-describedby="delete-confirmation-description"
+      >
+        <DialogTitle id="delete-confirmation-title">
+          {"Confirm Delete"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-confirmation-description">
+            Are you sure you want to delete the event "{selectedEvent?.title}"?
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            No, Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="secondary" autoFocus>
+            Yes, Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
