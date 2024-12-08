@@ -14,6 +14,8 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BaseUrl from "../BaseUrl/BaseUrl";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../redux/features/AuthSlice";
 
 const SignIn = () => {
   const [showSignIn, setShowSignIn] = useState(false);
@@ -24,63 +26,49 @@ const SignIn = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   // Use effect to check if "remember me" data is available in localStorage
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("email");
-    const savedPassword = localStorage.getItem("password");
+  // useEffect(() => {
+  //   const savedEmail = localStorage.getItem("email");
+  //   const savedPassword = localStorage.getItem("password");
 
-    if (savedEmail && savedPassword) {
-      setEmail(savedEmail);
-      setPassword(savedPassword);
-      setRememberMe(true);
-    }
-  }, []);
+  //   if (savedEmail && savedPassword) {
+  //     setEmail(savedEmail);
+  //     setPassword(savedPassword);
+  //     setRememberMe(true);
+  //   }
+  // }, []);
 
+  const dispatch = useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Reset  loading state
-    setLoading(true);
+    // Dispatch hook from Redux
 
+    // Credentials for login
     const credentials = { email, password };
 
-    try {
-      const response = await axios.post(`${BaseUrl}/admin/login`, credentials, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    // Dispatch the loginUser thunk
+    dispatch(loginUser(credentials))
+      .unwrap()
+      .then(() => {
+        // Successful login
+        toast.success("Logged in successfully!");
+
+        // Save to localStorage if "remember me" is checked
+        if (rememberMe) {
+          localStorage.setItem("email", email);
+          localStorage.setItem("password", password); // Note: Avoid saving passwords in localStorage in production
+        } else {
+          localStorage.removeItem("email");
+          localStorage.removeItem("password");
+        }
+
+        // Redirect to another page
+        window.location.href = "/dashboard-layout";
+      })
+      .catch((error) => {
+        // Handle error from thunk rejection
+        toast.error(error || "An error occurred. Please try again.");
       });
-
-      // Handle successful login
-      console.log("Logged in successfully:", response.data);
-
-      // Save to localStorage if "remember me" is checked
-      if (rememberMe) {
-        localStorage.setItem("email", email);
-        localStorage.setItem("password", password); // Note: In production, avoid saving passwords in localStorage
-      } else {
-        localStorage.removeItem("email");
-        localStorage.removeItem("password");
-      }
-
-      // Redirect to another page or handle user session
-      window.location.href = "/dashboard-layout";
-    } catch (err) {
-      // Handle error
-      if (err.response) {
-        // If the error is from the server (response error)
-        toast.error(
-          err.response.data.message || "Login failed, please try again."
-        );
-      } else if (err.request) {
-        // If no response is received from the server
-        toast.error("Network error. Please try again later.");
-      } else {
-        // If some other error occurred
-        toast.error("An error occurred. Please try again later.");
-      }
-    } finally {
-      setLoading(false);
-    }
   };
 
   const features = [
