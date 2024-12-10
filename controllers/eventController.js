@@ -3,7 +3,8 @@ const AppError = require("../utils/appError");
 const { Event } = require("../models/userModel");
 
 exports.createEvent = catchAsync(async (req, res, next) => {
-	const createdBy = req.session.user?.id;
+	// const createdBy = req.session.user?.id;
+
 	const newEvent = await Event.create({
 		title: req.body.title,
 		description: req.body.description,
@@ -17,7 +18,7 @@ exports.createEvent = catchAsync(async (req, res, next) => {
 		whatsappLink: req.body.whatsappLink,
 		registrationForm: req.body.registrationForm,
 		status: req.body.status || "upcoming",
-		createdBy: createdBy,
+		createdBy: req.body.createdBy,
 		participants: [],
 	});
 
@@ -29,7 +30,8 @@ exports.createEvent = catchAsync(async (req, res, next) => {
 
 exports.participantRegister = catchAsync(async (req, res, next) => {
 	const eventId = req.params.eventId;
-	const userId = req.session.user?.id;
+	// const userId = req.session.user?.id;
+	const userId = req.params.userId;
 
 	const event = await Event.findById(eventId);
 	if (!event) {
