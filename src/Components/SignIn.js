@@ -26,16 +26,16 @@ const SignIn = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   // Use effect to check if "remember me" data is available in localStorage
-  // useEffect(() => {
-  //   const savedEmail = localStorage.getItem("email");
-  //   const savedPassword = localStorage.getItem("password");
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("email");
+    const savedPassword = localStorage.getItem("password");
 
-  //   if (savedEmail && savedPassword) {
-  //     setEmail(savedEmail);
-  //     setPassword(savedPassword);
-  //     setRememberMe(true);
-  //   }
-  // }, []);
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const dispatch = useDispatch();
   const handleSubmit = async (e) => {

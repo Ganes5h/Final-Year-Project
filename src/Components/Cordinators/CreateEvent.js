@@ -11,10 +11,15 @@ import {
   FormInput,
 } from "lucide-react";
 
+import { useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import BaseUrl from "../../BaseUrl/BaseUrl";
 
 function CreateEvent() {
+  const { user } = useSelector((state) => state.auth);
+
   // [Previous state and handlers remain the same until the return statement]
   const [eventDetails, setEventDetails] = useState({
     title: "",
@@ -31,6 +36,7 @@ function CreateEvent() {
       fields: [{ name: "", type: "text", required: false, options: [] }],
     },
     status: "upcoming",
+    createdBy: user?._id,
   });
 
   const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -104,6 +110,7 @@ function CreateEvent() {
       ...eventDetails,
       maxParticipants: Number(eventDetails.maxParticipants), // Convert to number
       activityPoints: Number(eventDetails.activityPoints), // Convert to number
+      createdBy: String(eventDetails.createdBy), // convert to String
     };
 
     console.log(updatedEventDetails);
@@ -112,9 +119,28 @@ function CreateEvent() {
       .post(`${BaseUrl}/event/create`, updatedEventDetails)
       .then((response) => {
         console.log("Event created successfully:", response.data);
+        toast.success("Event Created Successfully");
+        setEventDetails({
+          title: "",
+          description: "",
+          club: "",
+          startDate: "",
+          endDate: "",
+          registrationDeadline: "",
+          maxParticipants: null,
+          activityPoints: null,
+          venue: "",
+          whatsappLink: "",
+          registrationForm: {
+            fields: [{ name: "", type: "text", required: false, options: [] }],
+          },
+          status: "upcoming",
+          createdBy: user?._id,
+        });
       })
       .catch((error) => {
         console.error("There was an error creating the event:", error);
+        toast.error(error || "An error occurred. Please try again.");
       });
   };
 
@@ -649,6 +675,7 @@ function CreateEvent() {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }

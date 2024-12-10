@@ -26,13 +26,18 @@ import {
   TrashIcon,
 } from "lucide-react";
 import CloseIcon from "@mui/icons-material/Close";
+import { TextField } from "@material-ui/core";
 import BaseUrl from "../../BaseUrl/BaseUrl";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ViewEvents = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editedEvent, setEditedEvent] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -50,18 +55,22 @@ const ViewEvents = () => {
     setShowPreviewModal(!showPreviewModal);
   };
 
-  const handleViewMore = async (event) => {
-    try {
-      // Fetch specific event details by ID
-      const response = await axios.get(
-        `${BaseUrl}/event/eventDetails/${event._id}`
-      );
-      setSelectedEvent(response.data.data.event);
-      togglePreviewModal();
-    } catch (error) {
-      console.error("Error fetching event details:", error);
-    }
-  };
+  // const handleViewMore = async (event) => {
+  //   try {
+  //     // Fetch specific event details by ID
+  //     const response = await axios.get(
+  //       `${BaseUrl}/event/eventDetails/${event._id}`
+  //     );
+
+  //     console.log("Event Details Response:", response.data);
+
+  //     const fullEventDetails = response.data.data.event;
+  //     setSelectedEvent(fullEventDetails);
+  //     togglePreviewModal();
+  //   } catch (error) {
+  //     console.error("Error fetching event details:", error);
+  //   }
+  // };
 
   const handleDeleteClick = () => {
     // Open delete confirmation modal
@@ -75,7 +84,6 @@ const ViewEvents = () => {
 
       // Remove the deleted event from the events list
       setEvents(events.filter((event) => event._id !== selectedEvent._id));
-
       // Close both modals
       setShowDeleteConfirmModal(false);
       setShowPreviewModal(false);
@@ -88,6 +96,142 @@ const ViewEvents = () => {
   const handleDeleteCancel = () => {
     // Close delete confirmation modal
     setShowDeleteConfirmModal(false);
+  };
+
+  const handleEditClick = () => {
+    // Create a copy of the selected event to edit
+    setEditedEvent({ ...selectedEvent });
+    setShowEditModal(true);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditedEvent((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // const handleEditSave = async () => {
+  //   try {
+  //     // Prepare the data to send - only send fields that can be edited
+  //     const updateData = {
+  //       title: editedEvent.title,
+  //       description: editedEvent.description,
+  //       startDate: editedEvent.startDate,
+  //       endDate: editedEvent.endDate,
+  //       registrationDeadline: editedEvent.registrationDeadline,
+  //       venue: editedEvent.venue,
+  //       maxParticipants: editedEvent.maxParticipants,
+  //       activityPoints: editedEvent.activityPoints,
+  //       whatsappLink: editedEvent.whatsappLink,
+  //     };
+
+  //       // Log the data being sent
+  //   console.log("Update Data:", updateData);
+
+  //     // Make PATCH request to update event
+  //     const response = await axios.patch(
+  //       `http://localhost:4000/api/event/updateEvent/${editedEvent._id}`,
+  //       updateData
+  //     );
+
+  //     console.log("Update Response:", response.data);
+
+  //     // Update the events list with the modified event
+  //     setEvents((prevEvents) =>
+  //       prevEvents.map((event) =>
+  //         event._id === editedEvent._id ? { ...event, ...updateData } : event
+  //       )
+  //     );
+
+  //     // Update the selected event
+  //     setSelectedEvent((prev) => ({ ...prev, ...updateData }));
+
+  //     // Close edit modal
+  //     setShowEditModal(false);
+  //   } catch (error) {
+  //     console.error("Error updating event:", error);
+  //   }
+  // };
+
+  const handleEditSave = async () => {
+    try {
+      // Prepare the data to send - only send fields that can be edited
+      const updateData = {
+        title: editedEvent.title,
+        description: editedEvent.description,
+        startDate: editedEvent.startDate,
+        endDate: editedEvent.endDate,
+        registrationDeadline: editedEvent.registrationDeadline,
+        venue: editedEvent.venue,
+        maxParticipants: editedEvent.maxParticipants,
+        activityPoints: editedEvent.activityPoints, // Ensure this is included
+        whatsappLink: editedEvent.whatsappLink,
+      };
+
+      // Log the data being sent
+      console.log("Update Data:", updateData);
+
+      // Make PATCH request to update event
+      const response = await axios.patch(
+        `http://localhost:4000/api/event/updateEvent/${editedEvent._id}`,
+        updateData
+      );
+
+      console.log("Update Response:", response.data);
+      toast.success("Event Saved Successfully");
+
+      // Update the events list with the modified event
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event._id === editedEvent._id ? { ...event, ...updateData } : event
+        )
+      );
+
+      // Directly update the selectedEvent with the new data
+      setSelectedEvent((prev) => ({
+        ...prev,
+        ...updateData,
+      }));
+
+      // Close edit modal
+      setShowEditModal(false);
+    } catch (error) {
+      console.error("Error updating event:", error);
+      toast.error(error || "An error occurred. Please try again.");
+    }
+  };
+
+  const handleViewMore = async (event) => {
+    try {
+      // Fetch specific event details by ID
+      const response = await axios.get(
+        `${BaseUrl}/event/eventDetails/${event._id}`
+      );
+
+      console.log("Event Details Response:", response.data);
+
+      const fullEventDetails = response.data.data.event;
+
+      // Optional: Cross-check with local state to ensure most recent updates
+      const localEventData = events.find((e) => e._id === event._id);
+
+      // Merge server data with local updates if available
+      const mergedEventDetails = localEventData
+        ? { ...fullEventDetails, ...localEventData }
+        : fullEventDetails;
+
+      setSelectedEvent(mergedEventDetails);
+      togglePreviewModal();
+    } catch (error) {
+      console.error("Error fetching event details:", error);
+    }
+  };
+
+  const handleEditCancel = () => {
+    setShowEditModal(false);
+    setEditedEvent(null);
   };
 
   return (
@@ -389,6 +533,7 @@ const ViewEvents = () => {
                       color="primary"
                       className="bg-blue-500 hover:bg-blue-600"
                       startIcon={<PencilIcon className="h-4 w-4" />}
+                      onClick={handleEditClick}
                     >
                       Edit
                     </Button>
@@ -404,6 +549,133 @@ const ViewEvents = () => {
                     </Button>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && editedEvent && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="w-full max-w-3xl bg-white rounded-lg shadow-xl relative p-6">
+              <div className="flex justify-between items-center mb-6">
+                <Typography variant="h4" className="text-blue-600 font-bold">
+                  Edit Event
+                </Typography>
+                <IconButton onClick={handleEditCancel}>
+                  <CloseIcon />
+                </IconButton>
+              </div>
+
+              <div className="space-y-4">
+                <TextField
+                  fullWidth
+                  label="Event Title"
+                  name="title"
+                  value={editedEvent.title}
+                  onChange={handleEditChange}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label="Description"
+                  name="description"
+                  value={editedEvent.description}
+                  onChange={handleEditChange}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  label="Start Date"
+                  name="startDate"
+                  type="datetime-local"
+                  value={new Date(editedEvent.startDate)
+                    .toISOString()
+                    .slice(0, 16)}
+                  onChange={handleEditChange}
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  label="End Date"
+                  name="endDate"
+                  type="datetime-local"
+                  value={new Date(editedEvent.endDate)
+                    .toISOString()
+                    .slice(0, 16)}
+                  onChange={handleEditChange}
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  label="Registration Deadline"
+                  name="registrationDeadline"
+                  type="datetime-local"
+                  value={new Date(editedEvent.registrationDeadline)
+                    .toISOString()
+                    .slice(0, 16)}
+                  onChange={handleEditChange}
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  label="Venue"
+                  name="venue"
+                  value={editedEvent.venue}
+                  onChange={handleEditChange}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  label="Max Participants"
+                  name="maxParticipants"
+                  type="number"
+                  value={editedEvent.maxParticipants}
+                  onChange={handleEditChange}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  label="Activity Points"
+                  name="activityPoints"
+                  type="number"
+                  value={editedEvent.activityPoints}
+                  onChange={handleEditChange}
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  label="WhatsApp Group Link"
+                  name="whatsappLink"
+                  value={editedEvent.whatsappLink}
+                  onChange={handleEditChange}
+                  variant="outlined"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-4 mt-6">
+                <Button
+                  variant="contained"
+                  onClick={handleEditCancel}
+                  className="bg-gray-500 hover:bg-gray-600 text-white"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleEditSave}
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  Save Changes
+                </Button>
               </div>
             </div>
           </div>
@@ -435,6 +707,7 @@ const ViewEvents = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ToastContainer />
     </div>
   );
 };
