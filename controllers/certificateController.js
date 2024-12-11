@@ -8,14 +8,21 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const catchAsync = require("../utils/catchAsync");
 
-const AES_KEY = crypto.randomBytes(32);
-const AES_IV = crypto.randomBytes(16);
+const AES_KEY = Buffer.from(process.env.AES_KEY, "hex");
+const AES_IV = Buffer.from(process.env.AES_IV, "hex");
 
 const encryptAES256 = (data) => {
 	const cipher = crypto.createCipheriv("aes-256-cbc", AES_KEY, AES_IV);
 	let encrypted = cipher.update(data, "utf8", "hex");
 	encrypted += cipher.final("hex");
 	return encrypted;
+};
+
+const decryptAES256 = (encryptedData) => {
+	const decipher = crypto.createDecipheriv("aes-256-cbc", AES_KEY, AES_IV);
+	let decrypted = decipher.update(encryptedData, "hex", "utf8");
+	decrypted += decipher.final("utf8");
+	return decrypted;
 };
 
 const transporter = nodemailer.createTransport({
@@ -143,7 +150,7 @@ exports.bulkGenerateAndSend = catchAsync(async (req, res) => {
 			JSON.stringify({ certificateId, eventId, student: student._id })
 		);
 		const qrCodeImage = await QRCode.toDataURL(
-			`https://yourdomain.com/verify/${encryptedData}`
+			`https://secureCertify.edu/verify/${encryptedData}`
 		);
 
 		const newCertificate = await Certificate.create({
@@ -162,9 +169,8 @@ exports.bulkGenerateAndSend = catchAsync(async (req, res) => {
 			.exec();
 
 		const pdfBytes = await generatePDF(populatedCertificate, qrCodeImage);
-		// const pdfPath = `./certificates/certificate_${certificateId}.pdf`;
 
-		const certificatesDir = path.join(__dirname, "certificates"); // Ensure the certificates folder exists
+		const certificatesDir = path.join(__dirname, "certificates");
 		if (!fs.existsSync(certificatesDir)) {
 			fs.mkdirSync(certificatesDir, { recursive: true });
 		}
@@ -213,16 +219,26 @@ exports.verifyCertificate = catchAsync(async (req, res) => {
 	}
 
 	const parsedData = JSON.parse(decryptedData);
+
 	const certificate = await Certificate.findOne({
 		certificateId: parsedData.certificateId,
 	})
 		.populate("student", "name registrationNumber")
-		.populate("event", "name");
+		.populate("event", "title activityPoints");
 
 	if (!certificate) {
 		return res.status(404).json({
 			status: "error",
 			message: "Certificate not found.",
+		});
+	}
+
+	if (certificate.status === "revoked") {
+		return res.status(400).json({
+			status: "error",
+			message: "This certificate has been revoked.",
+			reason: certificate.revokedReason,
+			revokedDate: certificate.revokedDate,
 		});
 	}
 
@@ -233,9 +249,33 @@ exports.verifyCertificate = catchAsync(async (req, res) => {
 			certificateId: certificate.certificateId,
 			studentName: certificate.student.name,
 			usn: certificate.student.registrationNumber,
-			eventName: certificate.event.name,
+			eventName: certificate.event.title,
 			activityPoints: certificate.activityPoints,
 			issuedDate: certificate.issueDate,
 		},
+	});
+});
+
+exports.revokeCertificate = catchAsync(async (req, res) => {
+	const { certificateId, reason, revokedById } = req.body;
+
+	const certificate = await Certificate.findOne({ certificateId });
+	if (!certificate) {
+		return res.status(404).json({ message: "Certificate not found." });
+	}
+
+	if (certificate.status === "revoked") {
+		return res.status(400).json({ message: "Certificate is already revoked." });
+	}
+	certificate.status = "revoked";
+	certificate.revokedReason = reason;
+	certificate.revokedDate = new Date();
+	certificate.revokedBy = revokedById;
+
+	await certificate.save();
+
+	res.status(200).json({
+		message: `Certificate ${certificateId} has been revoked.`,
+		certificate,
 	});
 });

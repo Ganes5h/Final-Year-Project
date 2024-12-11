@@ -11,4 +11,8 @@ router
 	.route("/verify-certificate/:certificateHash")
 	.get(certificateController.verifyCertificate);
 
+router
+	.route("/revoke-certificate")
+	.post(certificateController.revokeCertificate);
+
 module.exports = router;
