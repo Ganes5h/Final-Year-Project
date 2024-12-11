@@ -10,4 +10,14 @@ router.route("/allEvents").get(eventController.getAllEvents);
 router.route("/updateEvent/:id").patch(eventController.updateEventDetails);
 router.route("/deleteEvent/:id").delete(eventController.deleteEvent);
 
+router
+	.route("/participate/:eventId/:userId")
+	.post(eventController.participantRegister);
+
+router.route("/getParticipants/:eventId").get(eventController.getParticipants);
+
+router
+	.route("/markAttendance/:eventId/:studentId")
+	.get(eventController.markAttendance);
+
 module.exports = router;

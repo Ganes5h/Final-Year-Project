@@ -5,7 +5,7 @@ const router = express.Router();
 
 router
 	.route("/generate-certificate")
-	.post(certificateController.generateCertificate);
+	.post(certificateController.bulkGenerateAndSend);
 
 router
 	.route("/verify-certificate/:certificateHash")

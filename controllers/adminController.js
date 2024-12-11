@@ -6,130 +6,130 @@ const { generateToken } = require("../utils/token"); // If token verification is
 const jwt = require("jsonwebtoken");
 // Bulk Registration Controller
 exports.bulkRegisterUsers = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "CSV file is required." });
-  }
+	if (!req.file) {
+		return res.status(400).json({ message: "CSV file is required." });
+	}
 
-  const users = [];
+	const users = [];
 
-  // Parse CSV file
-  fs.createReadStream(req.file.path)
-    .pipe(csv())
-    .on("data", (row) => {
-      // Push each row (user data) into users array
-      users.push(row);
-    })
-    .on("end", async () => {
-      const registeredUsers = [];
-      const failedUsers = [];
+	// Parse CSV file
+	fs.createReadStream(req.file.path)
+		.pipe(csv())
+		.on("data", (row) => {
+			// Push each row (user data) into users array
+			users.push(row);
+		})
+		.on("end", async () => {
+			const registeredUsers = [];
+			const failedUsers = [];
 
-      // Loop through each user and register
-      for (const user of users) {
-        const { name, email, role, department, registrationNumber, phone } =
-          user;
+			// Loop through each user and register
+			for (const user of users) {
+				const { name, email, role, department, registrationNumber, phone } =
+					user;
 
-        try {
-          // Check if user already exists
-          const existingUser = await User.findOne({ email });
-          if (existingUser) {
-            failedUsers.push({ email, error: "User already exists" });
-            continue;
-          }
+				try {
+					// Check if user already exists
+					const existingUser = await User.findOne({ email });
+					if (existingUser) {
+						failedUsers.push({ email, error: "User already exists" });
+						continue;
+					}
 
-          // Generate temporary password
-          const tempPassword = crypto.randomBytes(8).toString("hex");
-          const hashedPassword = await bcrypt.hash(tempPassword, 10);
+					// Generate temporary password
+					const tempPassword = crypto.randomBytes(8).toString("hex");
+					const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-          // Create new user
-          const newUser = new User({
-            name,
-            email,
-            password: hashedPassword,
-            role,
-            department,
-            registrationNumber,
-            phone,
-          });
-          await newUser.save();
+					// Create new user
+					const newUser = new User({
+						name,
+						email,
+						password: hashedPassword,
+						role,
+						department,
+						registrationNumber,
+						phone,
+					});
+					await newUser.save();
 
-          // Send registration email with temporary password
-          await sendMail({
-            to: email,
-            subject: "Welcome to the Certificate Platform",
-            text: `Hello ${name},\n\nYour account has been created. Use the following temporary password to log in: ${tempPassword}\nPlease change it upon first login.\n\nRegards,\nAdmin`,
-          });
+					// Send registration email with temporary password
+					await sendMail({
+						to: email,
+						subject: "Welcome to the Certificate Platform",
+						text: `Hello ${name},\n\nYour account has been created. Use the following temporary password to log in: ${tempPassword}\nPlease change it upon first login.\n\nRegards,\nAdmin`,
+					});
 
-          registeredUsers.push(email);
-        } catch (error) {
-          console.error(`Failed to register user ${email}:`, error);
-          failedUsers.push({ email, error: "Registration failed" });
-        }
-      }
+					registeredUsers.push(email);
+				} catch (error) {
+					console.error(`Failed to register user ${email}:`, error);
+					failedUsers.push({ email, error: "Registration failed" });
+				}
+			}
 
-      res.status(200).json({
-        message: "Bulk registration completed",
-        registeredUsers,
-        failedUsers,
-      });
-    });
+			res.status(200).json({
+				message: "Bulk registration completed",
+				registeredUsers,
+				failedUsers,
+			});
+		});
 };
 
 // Register and automatically log in the user by setting up a session
 
 exports.registerUser = async (req, res) => {
-  try {
-    const { name, email, role, department, registrationNumber, phone } =
-      req.body;
+	try {
+		const { name, email, role, department, registrationNumber, phone } =
+			req.body;
 
-    // Check for existing user by email or registration number
-    const existingUser = await User.findOne({
-      $or: [{ email }, { registrationNumber }],
-    });
-    if (existingUser) {
-      return res.status(400).json({
-        message: "User with this email or registration number already exists.",
-      });
-    }
+		// Check for existing user by email or registration number
+		const existingUser = await User.findOne({
+			$or: [{ email }, { registrationNumber }],
+		});
+		if (existingUser) {
+			return res.status(400).json({
+				message: "User with this email or registration number already exists.",
+			});
+		}
 
-    // Generate a temporary password and hash it
-    const tempPassword = crypto.randomBytes(8).toString("hex");
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+		// Generate a temporary password and hash it
+		const tempPassword = crypto.randomBytes(8).toString("hex");
+		const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-    // Create a new user
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-      role,
-      department,
-      registrationNumber,
-      phone,
-      firstLogin: true, // Mark first login for setting a new password later
-    });
-    await newUser.save();
+		// Create a new user
+		const newUser = new User({
+			name,
+			email,
+			password: hashedPassword,
+			role,
+			department,
+			registrationNumber,
+			phone,
+			firstLogin: true, // Mark first login for setting a new password later
+		});
+		await newUser.save();
 
-    // Set up session for the registered user
-    req.session.user = {
-      id: newUser._id,
-      email: newUser.email,
-      role: newUser.role,
-    };
+		// Set up session for the registered user
+		req.session.user = {
+			id: newUser._id,
+			email: newUser.email,
+			role: newUser.role,
+		};
 
-    // Send registration email with temporary credentials
-    await sendMail({
-      to: email,
-      subject: "Welcome to the Certificate Platform",
-      text: `Hello ${name},\n\nYour account has been created. Use the following temporary password to log in: ${tempPassword}\nPlease change it upon first login.\n\nRegards,\nAdmin`,
-    });
+		// Send registration email with temporary credentials
+		await sendMail({
+			to: email,
+			subject: "Welcome to the Certificate Platform",
+			text: `Hello ${name},\n\nYour account has been created. Use the following temporary password to log in: ${tempPassword}\nPlease change it upon first login.\n\nRegards,\nAdmin`,
+		});
 
-    res.status(201).json({
-      message:
-        "User registered and logged in successfully, check email for login credentials.",
-    });
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+		res.status(201).json({
+			message:
+				"User registered and logged in successfully, check email for login credentials.",
+		});
+	} catch (error) {
+		console.error("Error registering user:", error);
+		res.status(500).json({ message: "Internal server error" });
+	}
 };
 
 // Secret key for JWT (store securely, e.g., in environment variables)
@@ -137,55 +137,55 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Login Controller
 exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+	try {
+		const { email, password } = req.body;
 
-    // Check if email and password are provided
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
-    }
+		// Check if email and password are provided
+		if (!email || !password) {
+			return res
+				.status(400)
+				.json({ message: "Email and password are required" });
+		}
 
-    // Find user by email and include the password field
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
+		// Find user by email and include the password field
+		const user = await User.findOne({ email }).select("+password");
+		if (!user) {
+			return res.status(400).json({ message: "User not found" });
+		}
 
-    // Check if the user's password is defined before comparing
-    if (!user.password) {
-      return res.status(500).json({ message: "User password is missing" });
-    }
+		// Check if the user's password is defined before comparing
+		if (!user.password) {
+			return res.status(500).json({ message: "User password is missing" });
+		}
 
-    // Compare passwords
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+		// Compare passwords
+		const isPasswordMatch = await bcrypt.compare(password, user.password);
+		if (!isPasswordMatch) {
+			return res.status(400).json({ message: "Invalid credentials" });
+		}
 
-    // Generate JWT
-    const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "1d" } // Set expiration for the token
-    );
+		// Generate JWT
+		const token = jwt.sign(
+			{ id: user._id, email: user.email, role: user.role },
+			JWT_SECRET,
+			{ expiresIn: "1d" } // Set expiration for the token
+		);
 
-    // Respond with the token and user data (excluding the password)
-    const { password: _, ...userData } = user.toObject();
-    res.status(200).json({
-      message: "Login successful",
-      token,
-      user: userData,
-    });
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+		// Respond with the token and user data (excluding the password)
+		const { password: _, ...userData } = user.toObject();
+		res.status(200).json({
+			message: "Login successful",
+			token,
+			user: userData,
+		});
+	} catch (error) {
+		console.error("Error logging in user:", error);
+		res.status(500).json({ message: "Internal server error" });
+	}
 };
 
 // Log out user and destroy session
 exports.logoutUser = (req, res) => {
-  req.session = null; // Clears the session cookie
-  res.status(200).json({ message: "Logged out successfully" });
+	req.session = null; // Clears the session cookie
+	res.status(200).json({ message: "Logged out successfully" });
 };

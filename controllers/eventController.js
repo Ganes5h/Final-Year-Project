@@ -111,6 +111,8 @@ exports.updateEventDetails = catchAsync(async (req, res, next) => {
 		"whatsappLink",
 		"registrationForm",
 		"status",
+		"activityPoints",
+		"registrationDeadline",
 	];
 	const updateData = {};
 
@@ -150,4 +152,43 @@ exports.deleteEvent = catchAsync(async (req, res, next) => {
 		status: "success",
 		data: null,
 	});
+});
+
+exports.getParticipants = catchAsync(async (req, res) => {
+	const eventId = req.params.eventId;
+	const event = await Event.findById(eventId).populate(
+		"participants.student",
+		"name email"
+	);
+
+	if (!event) {
+		return res.status(404).json({ message: "Event not found" });
+	}
+
+	res.status(200).json({ participants: event.participants });
+});
+
+exports.markAttendance = catchAsync(async (req, res) => {
+	const { eventId, studentId } = req.params;
+
+	const event = await Event.findById(eventId);
+	if (!event) {
+		return res.status(404).json({ message: "Event not found" });
+	}
+
+	const participant = event.participants.find(
+		(p) => p.student.toString() === studentId
+	);
+
+	if (!participant) {
+		return res.status(404).json({ message: "Participant not found" });
+	}
+
+	participant.attendance = true;
+
+	await event.save();
+
+	res
+		.status(200)
+		.json({ message: "Attendance marked successfully", participant });
 });

@@ -1,194 +1,16 @@
-// const { Certificate } = require("../models/userModel");
-// const QRCode = require("qrcode");
-// const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
-// const fs = require("fs");
-// const crypto = require("crypto");
-// const mongoose = require("mongoose");
-// const catchAsync = require("../utils/catchAsync");
-// const path = require("path");
-
-// exports.generateCertificate = catchAsync(async (req, res) => {
-// 	const { eventId, studentId, clubId, activityPoints } = req.body;
-
-// 	if (!eventId || !studentId || !clubId || !activityPoints) {
-// 		return res.status(400).json({ error: "Missing required parameters" });
-// 	}
-
-// 	let eventObjectId, studentObjectId, clubObjectId;
-// 	try {
-// 		eventObjectId = mongoose.Types.ObjectId(eventId);
-// 		studentObjectId = mongoose.Types.ObjectId(studentId);
-// 		clubObjectId = mongoose.Types.ObjectId(clubId);
-// 	} catch (error) {
-// 		eventObjectId = eventId;
-// 		studentObjectId = studentId;
-// 		clubObjectId = clubId;
-// 	}
-
-// 	// Generate a unique certificate ID
-// 	const certificateId = crypto.randomUUID();
-
-// 	// Generate SHA-256 hash for the certificate
-// 	const certificateHash = crypto
-// 		.createHash("sha256")
-// 		.update(certificateId + eventId + studentId + clubId)
-// 		.digest("hex");
-
-// 	// Generate QR code with verification URL
-// 	const verificationUrl = `https://yourdomain.com/verify/${certificateHash}`;
-// 	const qrCodeImage = await QRCode.toDataURL(verificationUrl);
-
-// 	// Save certificate details to the database
-// 	const newCertificate = new Certificate({
-// 		certificateId,
-// 		event: eventObjectId,
-// 		student: studentObjectId,
-// 		club: clubObjectId,
-// 		certificateHash,
-// 		qrCode: qrCodeImage,
-// 		activityPoints,
-// 	});
-
-// 	await newCertificate.save();
-
-// 	const certificateDetails = await Certificate.findOne({ certificateId })
-// 		.populate("student", "name registrationNumber")
-// 		.populate("event", "name")
-// 		.exec();
-
-// 	const studentName = certificateDetails.student.name;
-// 	const usn = certificateDetails.student.registrationNumber;
-// 	const eventName = certificateDetails.event.name;
-
-// 	// Dynamically load the certificate template
-// 	const templatePath = path.join(
-// 		__dirname,
-// 		"../uploads/templates/certificate.png"
-// 	);
-// 	const templateBytes = fs.readFileSync(templatePath);
-
-// 	// Create a new PDF document
-// 	const pdfDoc = await PDFDocument.create();
-// 	const page = pdfDoc.addPage([2000, 1414]); // A4 size
-
-// 	// Embed the certificate template
-// 	const templateImage = await pdfDoc.embedPng(templateBytes);
-// 	const { width, height } = templateImage.scale(1);
-// 	page.drawImage(templateImage, {
-// 		x: 0,
-// 		y: 0,
-// 		width,
-// 		height,
-// 	});
-
-// 	const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-// 	const text = `This Certificate is presented to ${studentName} bearing usn ${usn} of Computer Science and Engineering Department for his/her participation in the event ${eventName} organized by Rotaract Club of GIT on 28th November 2023 and is eligible to claim ${activityPoints} Activity Points prescribed by AICTE.`;
-
-// 	// Define text box parameters (width, height, position)
-// 	const boxWidth = 1500;
-// 	const boxHeight = 700;
-// 	const x = 100; // X position
-// 	const y = 600; // Y position
-
-// 	// Define the font size (adjust based on content)
-// 	const fontSize = 40;
-
-// 	// Word wrap function to ensure text stays within box width
-// 	const wrapText = (text, maxWidth, font) => {
-// 		const words = text.split(" ");
-// 		let lines = [];
-// 		let currentLine = "";
-// 		for (let word of words) {
-// 			const testLine =
-// 				currentLine + (currentLine.length === 0 ? "" : " ") + word;
-// 			const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-// 			if (testWidth <= maxWidth) {
-// 				currentLine = testLine;
-// 			} else {
-// 				if (currentLine.length > 0) {
-// 					lines.push(currentLine);
-// 				}
-// 				currentLine = word;
-// 			}
-// 		}
-// 		if (currentLine.length > 0) {
-// 			lines.push(currentLine);
-// 		}
-// 		return lines;
-// 	};
-
-// 	const wrappedText = wrapText(text, boxWidth - 200, font); // Wrap the text
-// 	const lineHeight = fontSize * 1.5; // Line height
-
-// 	// Draw text in the defined box, centered horizontally
-// 	let textY = y;
-// 	for (const line of wrappedText) {
-// 		const lineWidth = font.widthOfTextAtSize(line, fontSize);
-// 		const x = (boxWidth - lineWidth) / 2; // Centering the text
-// 		page.drawText(line, {
-// 			x: x + 250, // Position text horizontally inside the box
-// 			y: textY,
-// 			size: fontSize,
-// 			font,
-// 			color: rgb(0, 0, 0),
-// 		});
-// 		textY -= lineHeight; // Move to the next line
-// 	}
-
-// 	// Embed the QR code image
-// 	const qrImage = await pdfDoc.embedPng(qrCodeImage);
-// 	page.drawImage(qrImage, { x: 1800, y: 80, width: 150, height: 150 });
-
-// 	const pdfBytes = await pdfDoc.save();
-// 	res.set({
-// 		"Content-Type": "application/pdf",
-// 		"Content-Disposition": `attachment; filename=certificate_${certificateId}.pdf`,
-// 	});
-// 	res.end(pdfBytes);
-// });
-
-// exports.verifyCertificate = catchAsync(async (req, res) => {
-// 	const { certificateHash } = req.params;
-
-// 	const certificate = await Certificate.findOne({ certificateHash })
-// 		.populate("student", "name registrationNumber")
-// 		.populate("event", "name");
-
-// 	if (!certificate) {
-// 		return res.status(404).json({
-// 			status: "error",
-// 			message: "Invalid or non-existent certificate.",
-// 		});
-// 	}
-
-// 	res.status(200).json({
-// 		status: "success",
-// 		message: "Certificate is valid.",
-// 		data: {
-// 			certificateId: certificate.certificateId,
-// 			studentName: certificate.student.name,
-// 			usn: certificate.student.registrationNumber,
-// 			eventName: certificate.event.name,
-// 			activityPoints: certificate.activityPoints,
-// 			issuedDate: certificate.issueDate,
-// 		},
-// 	});
-// });
-
+const { Event } = require("../models/userModel");
 const { Certificate } = require("../models/userModel");
 const QRCode = require("qrcode");
 const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
-const fs = require("fs");
 const crypto = require("crypto");
-const mongoose = require("mongoose");
-const catchAsync = require("../utils/catchAsync");
+const fs = require("fs");
 const path = require("path");
+const nodemailer = require("nodemailer");
+const catchAsync = require("../utils/catchAsync");
 
-// AES Key and IV generation
-const AES_KEY = crypto.randomBytes(32); // 256-bit key
-const AES_IV = crypto.randomBytes(16); // 128-bit IV
+const AES_KEY = crypto.randomBytes(32);
+const AES_IV = crypto.randomBytes(16);
 
-// AES Encryption Function
 const encryptAES256 = (data) => {
 	const cipher = crypto.createCipheriv("aes-256-cbc", AES_KEY, AES_IV);
 	let encrypted = cipher.update(data, "utf8", "hex");
@@ -196,96 +18,44 @@ const encryptAES256 = (data) => {
 	return encrypted;
 };
 
-// AES Decryption Function
-const decryptAES256 = (encryptedData) => {
-	const decipher = crypto.createDecipheriv("aes-256-cbc", AES_KEY, AES_IV);
-	let decrypted = decipher.update(encryptedData, "hex", "utf8");
-	decrypted += decipher.final("utf8");
-	return decrypted;
-};
+const transporter = nodemailer.createTransport({
+	service: "gmail",
+	auth: {
+		user: process.env.SMTP_EMIAL,
+		pass: process.env.SMTP_PASS,
+	},
+});
 
-exports.generateCertificate = catchAsync(async (req, res) => {
-	const { eventId, studentId, clubId, activityPoints } = req.body;
-
-	if (!eventId || !studentId || !clubId || !activityPoints) {
-		return res.status(400).json({ error: "Missing required parameters" });
-	}
-
-	// Validate IDs
-	let eventObjectId, studentObjectId, clubObjectId;
-	try {
-		eventObjectId = mongoose.Types.ObjectId(eventId);
-		studentObjectId = mongoose.Types.ObjectId(studentId);
-		clubObjectId = mongoose.Types.ObjectId(clubId);
-	} catch (error) {
-		eventObjectId = eventId;
-		studentObjectId = studentId;
-		clubObjectId = clubId;
-	}
-
-	// Generate a unique certificate ID
-	const certificateId = crypto.randomUUID();
-
-	// Combine and encrypt certificate data
-	const combinedData = JSON.stringify({
-		certificateId,
-		eventId,
-		studentId,
-		clubId,
-	});
-	const encryptedCertificateData = encryptAES256(combinedData);
-
-	// Generate QR code with verification URL
-	const verificationUrl = `https://yourdomain.com/verify/${encryptedCertificateData}`;
-	const qrCodeImage = await QRCode.toDataURL(verificationUrl);
-
-	// Save certificate details to the database
-	const newCertificate = new Certificate({
-		certificateId,
-		event: eventObjectId,
-		student: studentObjectId,
-		club: clubObjectId,
-		certificateHash: encryptedCertificateData,
-		qrCode: qrCodeImage,
-		activityPoints,
-	});
-
-	await newCertificate.save();
-
-	const certificateDetails = await Certificate.findOne({ certificateId })
-		.populate("student", "name registrationNumber")
-		.populate("event", "name")
-		.exec();
-
-	const studentName = certificateDetails.student.name;
-	const usn = certificateDetails.student.registrationNumber;
-	const eventName = certificateDetails.event.name;
-
-	// Dynamically load the certificate template
+// Generate Certificate PDF
+const generatePDF = async (certificateDetails, qrCodeImage) => {
 	const templatePath = path.join(
 		__dirname,
 		"../uploads/templates/certificate.png"
 	);
 	const templateBytes = fs.readFileSync(templatePath);
 
-	// Create a new PDF document
 	const pdfDoc = await PDFDocument.create();
-	const page = pdfDoc.addPage([2000, 1414]); // A4 size
+	const page = pdfDoc.addPage([2000, 1414]);
 
-	// Embed the certificate template
 	const templateImage = await pdfDoc.embedPng(templateBytes);
-	const { width, height } = templateImage.scale(1);
-	page.drawImage(templateImage, {
-		x: 0,
-		y: 0,
-		width,
-		height,
-	});
+	page.drawImage(templateImage, { x: 0, y: 0, width: 2000, height: 1414 });
 
 	const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+	const studentName = certificateDetails.student.name;
+	const usn = certificateDetails.student.registrationNumber;
+	const eventName = certificateDetails.event.title;
+	const activityPoints = certificateDetails.activityPoints;
+
 	const text = `This Certificate is presented to ${studentName} bearing usn ${usn} of Computer Science and Engineering Department for his/her participation in the event ${eventName} organized by Rotaract Club of GIT on 28th November 2023 and is eligible to claim ${activityPoints} Activity Points prescribed by AICTE.`;
 
-	// Define text box parameters (width, height, position)
+	// page.drawText(text, {
+	// 	x: 100,
+	// 	y: 700,
+	// 	size: 40,
+	// 	font,
+	// 	color: rgb(0, 0, 0),
+	// });
+
 	const boxWidth = 1500;
 	const boxHeight = 700;
 	const x = 100; // X position
@@ -319,33 +89,114 @@ exports.generateCertificate = catchAsync(async (req, res) => {
 	};
 
 	const wrappedText = wrapText(text, boxWidth - 200, font); // Wrap the text
-	const lineHeight = fontSize * 1.5; // Line height
-
-	// Draw text in the defined box, centered horizontally
+	const lineHeight = fontSize * 1.5;
 	let textY = y;
 	for (const line of wrappedText) {
 		const lineWidth = font.widthOfTextAtSize(line, fontSize);
-		const x = (boxWidth - lineWidth) / 2; // Centering the text
+		const x = (boxWidth - lineWidth) / 2;
 		page.drawText(line, {
-			x: x + 250, // Position text horizontally inside the box
+			x: x + 250,
 			y: textY,
 			size: fontSize,
 			font,
 			color: rgb(0, 0, 0),
 		});
-		textY -= lineHeight; // Move to the next line
+		textY -= lineHeight;
 	}
 
-	// Embed the QR code image
 	const qrImage = await pdfDoc.embedPng(qrCodeImage);
-	page.drawImage(qrImage, { x: 1800, y: 80, width: 150, height: 150 });
+	page.drawImage(qrImage, { x: 1800, y: 100, width: 150, height: 150 });
 
-	const pdfBytes = await pdfDoc.save();
-	res.set({
-		"Content-Type": "application/pdf",
-		"Content-Disposition": `attachment; filename=certificate_${certificateId}.pdf`,
+	return pdfDoc.save();
+};
+
+// Bulk Generate and Send Certificates
+exports.bulkGenerateAndSend = catchAsync(async (req, res) => {
+	const { eventId } = req.body;
+
+	const event = await Event.findById(eventId).populate(
+		"participants.student",
+		"name email registrationNumber"
+	);
+
+	if (!event) {
+		return res
+			.status(404)
+			.json({ status: "error", message: "Event not found." });
+	}
+
+	const attendees = event.participants.filter(
+		(participant) =>
+			participant.attendance === true && !participant.certificateIssued
+	);
+
+	if (attendees.length === 0) {
+		return res
+			.status(400)
+			.json({ status: "error", message: "No attendees to process." });
+	}
+
+	for (const attendee of attendees) {
+		const { student } = attendee;
+		const certificateId = crypto.randomUUID();
+		const encryptedData = encryptAES256(
+			JSON.stringify({ certificateId, eventId, student: student._id })
+		);
+		const qrCodeImage = await QRCode.toDataURL(
+			`https://yourdomain.com/verify/${encryptedData}`
+		);
+
+		const newCertificate = await Certificate.create({
+			certificateId,
+			event: eventId,
+			student: student._id,
+			club: event.club,
+			certificateHash: encryptedData,
+			qrCode: qrCodeImage,
+			activityPoints: event.activityPoints,
+		});
+
+		const populatedCertificate = await Certificate.findById(newCertificate._id)
+			.populate("student", "name email registrationNumber")
+			.populate("event", "title activityPoints")
+			.exec();
+
+		const pdfBytes = await generatePDF(populatedCertificate, qrCodeImage);
+		// const pdfPath = `./certificates/certificate_${certificateId}.pdf`;
+
+		const certificatesDir = path.join(__dirname, "certificates"); // Ensure the certificates folder exists
+		if (!fs.existsSync(certificatesDir)) {
+			fs.mkdirSync(certificatesDir, { recursive: true });
+		}
+
+		// Define the path for the PDF file
+		const pdfPath = path.join(
+			certificatesDir,
+			`certificate_${certificateId}.pdf`
+		);
+
+		fs.writeFileSync(pdfPath, pdfBytes);
+
+		await transporter.sendMail({
+			from: process.env.SMTP_EMIAL,
+			to: student.email,
+			subject: "Your Participation Certificate",
+			text: `Dear ${student.name}, find your participation certificate attached.`,
+			attachments: [
+				{ filename: `certificate_${certificateId}.pdf`, path: pdfPath },
+			],
+		});
+
+		fs.unlinkSync(pdfPath);
+
+		attendee.certificateIssued = true;
+	}
+	await event.save();
+
+	res.status(200).json({
+		status: "success",
+		message: "Certificates generated and emailed successfully.",
 	});
-	res.end(pdfBytes);
 });
 
 exports.verifyCertificate = catchAsync(async (req, res) => {
