@@ -6,27 +6,28 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Card,
-  CardContent,
-  CardActions,
   Typography,
   Button,
   IconButton,
-  Chip,
+  MenuItem,
   Box,
+  TextField,
 } from "@material-ui/core";
+
 import {
   Calendar,
   Users,
   MapPin,
   Award,
   Link2,
-  X,
   PencilIcon,
   TrashIcon,
+  PlusIcon,
+  FormInput,
 } from "lucide-react";
+import { FormControlLabel, Checkbox } from "@mui/material";
+
 import CloseIcon from "@mui/icons-material/Close";
-import { TextField } from "@material-ui/core";
 import BaseUrl from "../../BaseUrl/BaseUrl";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -54,23 +55,6 @@ const ViewEvents = () => {
   const togglePreviewModal = () => {
     setShowPreviewModal(!showPreviewModal);
   };
-
-  // const handleViewMore = async (event) => {
-  //   try {
-  //     // Fetch specific event details by ID
-  //     const response = await axios.get(
-  //       `${BaseUrl}/event/eventDetails/${event._id}`
-  //     );
-
-  //     console.log("Event Details Response:", response.data);
-
-  //     const fullEventDetails = response.data.data.event;
-  //     setSelectedEvent(fullEventDetails);
-  //     togglePreviewModal();
-  //   } catch (error) {
-  //     console.error("Error fetching event details:", error);
-  //   }
-  // };
 
   const handleDeleteClick = () => {
     // Open delete confirmation modal
@@ -112,49 +96,6 @@ const ViewEvents = () => {
     }));
   };
 
-  // const handleEditSave = async () => {
-  //   try {
-  //     // Prepare the data to send - only send fields that can be edited
-  //     const updateData = {
-  //       title: editedEvent.title,
-  //       description: editedEvent.description,
-  //       startDate: editedEvent.startDate,
-  //       endDate: editedEvent.endDate,
-  //       registrationDeadline: editedEvent.registrationDeadline,
-  //       venue: editedEvent.venue,
-  //       maxParticipants: editedEvent.maxParticipants,
-  //       activityPoints: editedEvent.activityPoints,
-  //       whatsappLink: editedEvent.whatsappLink,
-  //     };
-
-  //       // Log the data being sent
-  //   console.log("Update Data:", updateData);
-
-  //     // Make PATCH request to update event
-  //     const response = await axios.patch(
-  //       `http://localhost:4000/api/event/updateEvent/${editedEvent._id}`,
-  //       updateData
-  //     );
-
-  //     console.log("Update Response:", response.data);
-
-  //     // Update the events list with the modified event
-  //     setEvents((prevEvents) =>
-  //       prevEvents.map((event) =>
-  //         event._id === editedEvent._id ? { ...event, ...updateData } : event
-  //       )
-  //     );
-
-  //     // Update the selected event
-  //     setSelectedEvent((prev) => ({ ...prev, ...updateData }));
-
-  //     // Close edit modal
-  //     setShowEditModal(false);
-  //   } catch (error) {
-  //     console.error("Error updating event:", error);
-  //   }
-  // };
-
   const handleEditSave = async () => {
     try {
       // Prepare the data to send - only send fields that can be edited
@@ -168,6 +109,17 @@ const ViewEvents = () => {
         maxParticipants: editedEvent.maxParticipants,
         activityPoints: editedEvent.activityPoints, // Ensure this is included
         whatsappLink: editedEvent.whatsappLink,
+        status: editedEvent.status,
+
+        registrationForm: {
+          fields: editedEvent.registrationForm.fields.map((field) => ({
+            name: field.name,
+            type: field.type,
+            required: field.required,
+            options: field.options || [], // Ensure options is always an array
+            _id: field._id, // Preserve the original _id
+          })),
+        },
       };
 
       // Log the data being sent
@@ -175,12 +127,12 @@ const ViewEvents = () => {
 
       // Make PATCH request to update event
       const response = await axios.patch(
-        `http://localhost:4000/api/event/updateEvent/${editedEvent._id}`,
+        `${BaseUrl}/event/updateEvent/${editedEvent._id}`,
         updateData
       );
 
       console.log("Update Response:", response.data);
-      toast.success("Event Saved Successfully");
+      toast.success("Event Saved Sucessfully");
 
       // Update the events list with the modified event
       setEvents((prevEvents) =>
@@ -232,6 +184,106 @@ const ViewEvents = () => {
   const handleEditCancel = () => {
     setShowEditModal(false);
     setEditedEvent(null);
+  };
+
+  const handleAddRegistrationField = () => {
+    const newField = {
+      name: `New Field ${editedEvent.registrationForm.fields.length + 1}`,
+      type: "text",
+      required: false,
+      options: [],
+    };
+
+    setEditedEvent((prev) => ({
+      ...prev,
+      registrationForm: {
+        ...prev.registrationForm,
+        fields: [...prev.registrationForm.fields, newField],
+      },
+    }));
+  };
+
+  const handleEditRegistrationField = (index) => {
+    // Implement edit logic if needed
+    console.log("Edit field", index);
+  };
+
+  const handleDeleteRegistrationField = (index) => {
+    setEditedEvent((prev) => ({
+      ...prev,
+      registrationForm: {
+        ...prev.registrationForm,
+        fields: prev.registrationForm.fields.filter((_, i) => i !== index),
+      },
+    }));
+  };
+
+  const handleRegistrationFieldChange = (index, field, value) => {
+    setEditedEvent((prev) => ({
+      ...prev,
+      registrationForm: {
+        ...prev.registrationForm,
+        fields: prev.registrationForm.fields.map((f, i) =>
+          i === index ? { ...f, [field]: value } : f
+        ),
+      },
+    }));
+  };
+
+  const handleAddRegistrationOption = (fieldIndex) => {
+    setEditedEvent((prev) => ({
+      ...prev,
+      registrationForm: {
+        ...prev.registrationForm,
+        fields: prev.registrationForm.fields.map((f, i) =>
+          i === fieldIndex
+            ? {
+                ...f,
+                options: [
+                  ...(f.options || []),
+                  `Option ${(f.options?.length || 0) + 1}`,
+                ],
+              }
+            : f
+        ),
+      },
+    }));
+  };
+
+  const handleDeleteRegistrationOption = (fieldIndex, optionIndex) => {
+    setEditedEvent((prev) => ({
+      ...prev,
+      registrationForm: {
+        ...prev.registrationForm,
+        fields: prev.registrationForm.fields.map((f, i) =>
+          i === fieldIndex
+            ? {
+                ...f,
+                options: f.options.filter((_, idx) => idx !== optionIndex),
+              }
+            : f
+        ),
+      },
+    }));
+  };
+
+  const handleRegistrationOptionChange = (fieldIndex, optionIndex, value) => {
+    setEditedEvent((prev) => ({
+      ...prev,
+      registrationForm: {
+        ...prev.registrationForm,
+        fields: prev.registrationForm.fields.map((f, i) =>
+          i === fieldIndex
+            ? {
+                ...f,
+                options: f.options.map((opt, idx) =>
+                  idx === optionIndex ? value : opt
+                ),
+              }
+            : f
+        ),
+      },
+    }));
   };
 
   return (
@@ -354,9 +406,14 @@ const ViewEvents = () => {
                       {selectedEvent.description}
                     </Typography>
 
-                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800">
+                    {/* <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800">
                       <Typography variant="body2">
                         Club: {selectedEvent.club.name}
+                      </Typography>
+                    </div> */}
+                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800">
+                      <Typography variant="body2">
+                        ID: {selectedEvent._id}
                       </Typography>
                     </div>
                   </div>
@@ -494,6 +551,140 @@ const ViewEvents = () => {
                       </div>
                     </div>
                   </div>
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-indigo-100 rounded-lg">
+                      <Award className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <div>
+                      <Typography variant="subtitle1" className="font-semibold">
+                        Status
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        className={`text-gray-600 px-2 py-1 rounded-full inline-block ${
+                          selectedEvent.status === "upcoming"
+                            ? "bg-blue-100 text-blue-800"
+                            : selectedEvent.status === "ongoing"
+                            ? "bg-green-100 text-green-800"
+                            : selectedEvent.status === "completed"
+                            ? "bg-gray-100 text-gray-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {selectedEvent.status}
+                      </Typography>
+                    </div>
+                  </div>
+
+                  {selectedEvent.registrationForm &&
+                    selectedEvent.registrationForm.fields &&
+                    selectedEvent.registrationForm.fields.length > 0 && (
+                      <>
+                        <div className="h-px bg-gray-200" />
+
+                        <div className="space-y-6">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-indigo-100 rounded-lg">
+                              <FormInput className="h-5 w-5 text-indigo-600" />
+                            </div>
+                            <Typography
+                              variant="h6"
+                              className="font-bold text-gray-900"
+                            >
+                              Registration Form
+                            </Typography>
+                          </div>
+
+                          <form className="space-y-6">
+                            {selectedEvent.registrationForm.fields.map(
+                              (field, index) => (
+                                <div
+                                  key={index}
+                                  className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                                >
+                                  <Typography
+                                    variant="subtitle1"
+                                    className="block mb-2 text-start"
+                                  >
+                                    <span className="font-medium text-gray-900">
+                                      {field.name || `Field ${index + 1}`}
+                                      {field.required && (
+                                        <span className="text-red-500 ml-1">
+                                          *
+                                        </span>
+                                      )}
+                                    </span>
+
+                                    {field.type === "text" && (
+                                      <input
+                                        type="text"
+                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
+                                        required={field.required}
+                                      />
+                                    )}
+
+                                    {field.type === "email" && (
+                                      <input
+                                        type="email"
+                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
+                                        required={field.required}
+                                      />
+                                    )}
+
+                                    {field.type === "number" && (
+                                      <input
+                                        type="number"
+                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
+                                        required={field.required}
+                                      />
+                                    )}
+
+                                    {field.type === "select" && (
+                                      <select
+                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
+                                        required={field.required}
+                                      >
+                                        <option value="">
+                                          Select an option
+                                        </option>
+                                        {field.options.map((option, idx) => (
+                                          <option key={idx} value={option}>
+                                            {option}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    )}
+
+                                    {field.type === "checkbox" && (
+                                      <div className="mt-2 space-y-2">
+                                        {field.options.map((option, idx) => (
+                                          <div
+                                            key={idx}
+                                            className="flex items-center"
+                                          >
+                                            <input
+                                              type="checkbox"
+                                              id={`${field.name}-${idx}`}
+                                              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <label
+                                              htmlFor={`${field.name}-${idx}`}
+                                              className="ml-2 text-gray-700"
+                                            >
+                                              {option}
+                                            </label>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </Typography>
+                                </div>
+                              )
+                            )}
+                          </form>
+                        </div>
+                      </>
+                    )}
 
                   <div className="h-px bg-gray-200" />
 
@@ -658,6 +849,190 @@ const ViewEvents = () => {
                   onChange={handleEditChange}
                   variant="outlined"
                 />
+
+                <TextField
+                  fullWidth
+                  select
+                  label="Status"
+                  name="status"
+                  value={editedEvent.status}
+                  onChange={handleEditChange}
+                  variant="outlined"
+                >
+                  {["upcoming", "ongoing", "completed", "cancelled"].map(
+                    (status) => (
+                      <MenuItem key={status} value={status}>
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </MenuItem>
+                    )
+                  )}
+                </TextField>
+              </div>
+              {/* Add this section after the existing TextField components */}
+              <div className="mt-6 space-y-4">
+                <Typography variant="h6" className="text-blue-600 font-bold">
+                  Registration Form Fields
+                </Typography>
+
+                {editedEvent.registrationForm && (
+                  <div className="space-y-4">
+                    {editedEvent.registrationForm.fields.map((field, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-50 p-4 rounded-lg border border-gray-200 relative"
+                      >
+                        <div className="flex justify-between items-center mb-4">
+                          <Typography
+                            variant="subtitle1"
+                            className="font-semibold"
+                          >
+                            Field {index + 1}
+                          </Typography>
+                          <div className="flex space-x-2">
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              onClick={() => handleEditRegistrationField(index)}
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </IconButton>
+                            <IconButton
+                              size="small"
+                              color="secondary"
+                              onClick={() =>
+                                handleDeleteRegistrationField(index)
+                              }
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </IconButton>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <TextField
+                            fullWidth
+                            label="Field Name"
+                            value={field.name}
+                            onChange={(e) =>
+                              handleRegistrationFieldChange(
+                                index,
+                                "name",
+                                e.target.value
+                              )
+                            }
+                            variant="outlined"
+                          />
+                          <TextField
+                            fullWidth
+                            select
+                            label="Field Type"
+                            value={field.type}
+                            onChange={(e) =>
+                              handleRegistrationFieldChange(
+                                index,
+                                "type",
+                                e.target.value
+                              )
+                            }
+                            variant="outlined"
+                          >
+                            {[
+                              "text",
+                              "email",
+                              "number",
+                              "select",
+                              "checkbox",
+                            ].map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={field.required}
+                                onChange={(e) =>
+                                  handleRegistrationFieldChange(
+                                    index,
+                                    "required",
+                                    e.target.checked
+                                  )
+                                }
+                              />
+                            }
+                            label="Required Field"
+                          />
+                        </div>
+
+                        {/* Conditional rendering for options */}
+                        {(field.type === "select" ||
+                          field.type === "checkbox") && (
+                          <div className="mt-4">
+                            <Typography variant="subtitle2" className="mb-2">
+                              Options
+                            </Typography>
+                            <div className="space-y-2">
+                              {field.options.map((option, optionIndex) => (
+                                <div
+                                  key={optionIndex}
+                                  className="flex items-center space-x-2"
+                                >
+                                  <TextField
+                                    fullWidth
+                                    value={option}
+                                    onChange={(e) =>
+                                      handleRegistrationOptionChange(
+                                        index,
+                                        optionIndex,
+                                        e.target.value
+                                      )
+                                    }
+                                    variant="outlined"
+                                    size="small"
+                                  />
+                                  <IconButton
+                                    size="small"
+                                    color="secondary"
+                                    onClick={() =>
+                                      handleDeleteRegistrationOption(
+                                        index,
+                                        optionIndex
+                                      )
+                                    }
+                                  >
+                                    <TrashIcon className="h-4 w-4" />
+                                  </IconButton>
+                                </div>
+                              ))}
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() =>
+                                  handleAddRegistrationOption(index)
+                                }
+                                className="mt-2"
+                              >
+                                Add Option
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddRegistrationField}
+                  className="mt-4"
+                  startIcon={<PlusIcon className="h-4 w-4" />}
+                >
+                  Add Registration Field
+                </Button>
               </div>
 
               <div className="flex justify-end space-x-4 mt-6">
