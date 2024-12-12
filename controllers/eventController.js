@@ -184,7 +184,7 @@ exports.markAttendance = catchAsync(async (req, res) => {
 		return res.status(404).json({ message: "Participant not found" });
 	}
 
-	participant.attendance = true;
+	participant.attendance = !participant.attendance;
 
 	await event.save();
 
