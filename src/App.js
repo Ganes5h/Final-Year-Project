@@ -3,6 +3,7 @@ import { Box, CircularProgress } from "@mui/material";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignIn from "./Components/SignIn";
 import "./App.css";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 //cordinators import
 import DashboardLayout from "./Components/Cordinators/Dashboard";
@@ -29,18 +30,16 @@ function App() {
           <Routes>
             <Route index element={<SignIn />} />
 
-            {/* <Route
-              exact
-              path="/dashboard"
-              element={
-                // <ProtectedRoute>
-                <DashBoard />
-                // </ProtectedRoute>
-              }
-            /> */}
-
             {/* Cordinators Routing */}
-            <Route exact path="/dashboard-layout" element={<DashboardLayout />}>
+            <Route
+              exact
+              path="/dashboard-layout"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route
                 index
                 path="analytics"

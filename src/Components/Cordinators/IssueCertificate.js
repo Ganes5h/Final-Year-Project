@@ -232,7 +232,7 @@ const IssueCertificate = () => {
               <div className="flex justify-evenly p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
                 <button
                   onClick={() => issueCertificates(event._id)}
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 hover:translate-x-1"
+                  className="inline-flex items-center px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg transition-all duration-200 hover:translate-x-1"
                 >
                   Issue Certificates
                 </button>

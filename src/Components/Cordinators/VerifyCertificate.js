@@ -13,7 +13,7 @@ const VerifyCertificate = () => {
   const handleScan = async (data) => {
     if (data && !hasScanned) {
       const qrData = data.text.split("/").pop(); // Extract the hash from the URL
-      console.log("Scanned Data:", qrData);
+      // console.log("Scanned Data:", qrData);
 
       setHasScanned(true); // Prevent further scans until reset
 
@@ -22,15 +22,7 @@ const VerifyCertificate = () => {
           `${BaseUrl}/certificate/verify-certificate/${qrData}`
         );
 
-        console.log("Verification Successful:", response.data);
-
-        // Swal.fire({
-        //   title: "Certificate Verified Successfully",
-        //   html: `Event: <strong>${response.data.data.eventName}</strong><br>
-        //          Student: <strong>${response.data.data.studentName}</strong><br>
-        //          USN: <strong>${response.data.data.usn}</strong>`,
-        //   icon: "success",
-        // });
+        // console.log("Verification Successful:", response.data);
 
         Swal.fire({
           title: "Certificate Verified Successfully",
@@ -42,10 +34,10 @@ const VerifyCertificate = () => {
           setHasScanned(false); // Reset after the Swal alert is closed
         });
       } catch (error) {
-        console.error("Verification Failed:", error);
+        // console.error("Verification Failed:", error);
 
         Swal.fire({
-          title: "Error",
+          title: "Invalid Certificate",
           text:
             error.response?.data?.message ||
             "An error occurred while verifying the certificate.",
@@ -54,48 +46,6 @@ const VerifyCertificate = () => {
       }
     }
   };
-
-  // const handleScan = async (data) => {
-  //   if (data && (!scanResult || data.text !== scanResult)) { // Process only if scanResult is different
-  //     const qrData = data.text.split("/").pop(); // Extract the hash from the URL
-  //     console.log("Scanned Data:", qrData);
-
-  //     setScanResult(data.text); // Save the scanned data
-  //     setHasScanned(true); // Prevent duplicate handling
-
-  //     try {
-  //       const response = await axios.get(
-  //         `${BaseUrl}/certificate/verify-certificate/${qrData}`
-  //       );
-
-  //       console.log("Verification Successful:", response.data);
-
-  //       Swal.fire({
-  //         title: "Certificate Verified Successfully",
-  //         html: `Event: <strong>${response.data.data.eventName}</strong><br>
-  //                Student: <strong>${response.data.data.studentName}</strong><br>
-  //                USN: <strong>${response.data.data.usn}</strong>`,
-  //         icon: "success",
-  //       }).then(() => {
-  //         setHasScanned(false); // Reset to allow re-scanning
-  //         setScanResult(""); // Clear the scan result for a fresh start
-  //       });
-  //     } catch (error) {
-  //       console.error("Verification Failed:", error);
-
-  //       Swal.fire({
-  //         title: "Error",
-  //         text:
-  //           error.response?.data?.message ||
-  //           "An error occurred while verifying the certificate.",
-  //         icon: "error",
-  //       }).then(() => {
-  //         setHasScanned(false); // Reset to allow re-scanning
-  //         setScanResult(""); // Clear the scan result for a fresh start
-  //       });
-  //     }
-  //   }
-  // };
 
   const handleError = (err) => {
     console.error(err);

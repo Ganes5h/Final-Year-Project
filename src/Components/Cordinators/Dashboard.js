@@ -374,12 +374,14 @@ export default function Dashboard() {
                 ></Avatar>
                 Edit Profile
               </MenuItem>
-              <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-              <MenuItem onClick={handleBilling}>Billing</MenuItem>
+              
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
         </header>
+        {/* <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+        <MenuItem onClick={handleBilling}>Billing</MenuItem> */}
+
         {/* <div className="">
           <Title title="Dashboard "></Title>
         </div> */}
