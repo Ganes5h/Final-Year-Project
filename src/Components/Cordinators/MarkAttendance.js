@@ -269,7 +269,7 @@ const MarkAttendance = () => {
                   onClick={() => handleViewMore(event)}
                   className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 hover:translate-x-1"
                 >
-                  SEE MORE
+                  Mark Attendance
                   <svg
                     className="w-4 h-4 ml-2"
                     fill="none"

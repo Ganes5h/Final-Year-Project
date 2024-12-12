@@ -11,6 +11,7 @@ import IssueCertificate from "./Components/Cordinators/IssueCertificate";
 import MarkAttendance from "./Components/Cordinators/MarkAttendance";
 import Analytics from "./Components/Cordinators/Analytics";
 import RevokeCertificate from "./Components/Cordinators/RevokeCertificate";
+import VerifyCertificate from "./Components/Cordinators/VerifyCertificate";
 
 import ViewEvent from "./Components/Cordinators/ViewEvent";
 
@@ -78,6 +79,15 @@ function App() {
               />
               <Route
                 exact
+                path="verify-certificate"
+                element={
+                  <>
+                    <VerifyCertificate />
+                  </>
+                }
+              />
+              <Route
+                exact
                 path="revoke-certificate"
                 element={
                   <>
@@ -85,7 +95,7 @@ function App() {
                   </>
                 }
               />
-                            <Route
+              <Route
                 exact
                 path="events/create-event"
                 element={

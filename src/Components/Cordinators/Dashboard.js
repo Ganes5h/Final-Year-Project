@@ -15,6 +15,7 @@ import { Outlet, Link } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { List, ListItem, ListItemText, Collapse, Divider } from "@mui/material";
+import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { motion } from "framer-motion";
 // Import any icons you need
@@ -95,6 +96,11 @@ export default function Dashboard() {
       path: "issue-certificate",
       label: "Issue Certificate",
       icon: SecurityIcon,
+    },
+    {
+      path: "verify-certificate",
+      label: "Verify Certificate",
+      icon: ImageSearchIcon,
     },
     {
       path: "revoke-certificate",
