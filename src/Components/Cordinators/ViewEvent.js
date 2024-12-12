@@ -123,7 +123,7 @@ const ViewEvents = () => {
       };
 
       // Log the data being sent
-      console.log("Update Data:", updateData);
+      // console.log("Update Data:", updateData);
 
       // Make PATCH request to update event
       const response = await axios.patch(
@@ -131,7 +131,7 @@ const ViewEvents = () => {
         updateData
       );
 
-      console.log("Update Response:", response.data);
+      // console.log("Update Response:", response.data);
       toast.success("Event Saved Sucessfully");
 
       // Update the events list with the modified event
@@ -162,7 +162,7 @@ const ViewEvents = () => {
         `${BaseUrl}/event/eventDetails/${event._id}`
       );
 
-      console.log("Event Details Response:", response.data);
+      // console.log("Event Details Response:", response.data);
 
       const fullEventDetails = response.data.data.event;
 
