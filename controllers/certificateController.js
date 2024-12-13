@@ -305,7 +305,7 @@ exports.getCertificatesByEventId = catchAsync(async (req, res) => {
 
 	const certificates = await Certificate.find({ event: eventId })
 		.populate("student", "name email registrationNumber")
-		.select("certificateId student");
+		.select("certificateId status student");
 
 	if (!certificates.length) {
 		return res

@@ -109,11 +109,11 @@ exports.registerUser = async (req, res) => {
 		await newUser.save();
 
 		// Set up session for the registered user
-		req.session.user = {
-			id: newUser._id,
-			email: newUser.email,
-			role: newUser.role,
-		};
+		// req.session.user = {
+		// 	id: newUser._id,
+		// 	email: newUser.email,
+		// 	role: newUser.role,
+		// };
 
 		// Send registration email with temporary credentials
 		await sendMail({
