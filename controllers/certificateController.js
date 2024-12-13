@@ -304,7 +304,7 @@ exports.getCertificatesByEventId = catchAsync(async (req, res) => {
 	}
 
 	const certificates = await Certificate.find({ event: eventId })
-		.populate("student", "name email registrationNumber") // Populate student details
+		.populate("student", "name email registrationNumber")
 		.select("certificateId student");
 
 	if (!certificates.length) {
@@ -316,5 +316,36 @@ exports.getCertificatesByEventId = catchAsync(async (req, res) => {
 	res.status(200).json({
 		message: "Certificates retrieved successfully",
 		certificates,
+	});
+});
+
+exports.getRevokedCertificates = catchAsync(async (req, res) => {
+	const { eventId } = req.params;
+
+	const event = await Event.findById(eventId).select("_id title");
+	if (!event) {
+		return res.status(404).json({ message: "Event not found" });
+	}
+
+	const revokedCertificates = await Certificate.find({
+		event: eventId,
+		status: "revoked",
+	})
+		.populate("student", "name email registrationNumber")
+		.select("certificateId student");
+
+	if (!revokedCertificates.length) {
+		return res
+			.status(404)
+			.json({ message: "No revoked certificates found for this event" });
+	}
+
+	res.status(200).json({
+		message: "Revoked certificates retrieved successfully",
+		event: {
+			eventId: event._id,
+			eventTitle: event.title,
+			revokedCertificates,
+		},
 	});
 });

@@ -19,4 +19,8 @@ router
 	.route("/revoke-certificate")
 	.post(certificateController.revokeCertificate);
 
+router
+	.route("/getRevokeCertificate/:eventId")
+	.get(certificateController.getRevokedCertificates);
+
 module.exports = router;
