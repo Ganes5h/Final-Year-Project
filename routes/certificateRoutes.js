@@ -12,6 +12,10 @@ router
 	.get(certificateController.verifyCertificate);
 
 router
+	.route("/getCertificateByEvents/:eventId")
+	.get(certificateController.getCertificatesByEventId);
+
+router
 	.route("/revoke-certificate")
 	.post(certificateController.revokeCertificate);
 

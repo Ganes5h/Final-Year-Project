@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
 const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
 const AES_KEY = Buffer.from(process.env.AES_KEY, "hex");
 const AES_IV = Buffer.from(process.env.AES_IV, "hex");
@@ -117,9 +118,14 @@ const generatePDF = async (certificateDetails, qrCodeImage) => {
 	return pdfDoc.save();
 };
 
-// Bulk Generate and Send Certificates
 exports.bulkGenerateAndSend = catchAsync(async (req, res) => {
 	const { eventId } = req.body;
+
+	if (!eventId) {
+		return res
+			.status(400)
+			.json({ status: "error", message: "Event ID is required." });
+	}
 
 	const event = await Event.findById(eventId).populate(
 		"participants.student",
@@ -133,8 +139,7 @@ exports.bulkGenerateAndSend = catchAsync(async (req, res) => {
 	}
 
 	const attendees = event.participants.filter(
-		(participant) =>
-			participant.attendance === true && !participant.certificateIssued
+		(participant) => participant.attendance && !participant.certificateIssued
 	);
 
 	if (attendees.length === 0) {
@@ -143,60 +148,70 @@ exports.bulkGenerateAndSend = catchAsync(async (req, res) => {
 			.json({ status: "error", message: "No attendees to process." });
 	}
 
-	for (const attendee of attendees) {
-		const { student } = attendee;
-		const certificateId = crypto.randomUUID();
-		const encryptedData = encryptAES256(
-			JSON.stringify({ certificateId, eventId, student: student._id })
-		);
-		const qrCodeImage = await QRCode.toDataURL(
-			`https://secureCertify.edu/verify/${encryptedData}`
-		);
-
-		const newCertificate = await Certificate.create({
-			certificateId,
-			event: eventId,
-			student: student._id,
-			club: event.club,
-			certificateHash: encryptedData,
-			qrCode: qrCodeImage,
-			activityPoints: event.activityPoints,
-		});
-
-		const populatedCertificate = await Certificate.findById(newCertificate._id)
-			.populate("student", "name email registrationNumber")
-			.populate("event", "title activityPoints")
-			.exec();
-
-		const pdfBytes = await generatePDF(populatedCertificate, qrCodeImage);
-
-		const certificatesDir = path.join(__dirname, "certificates");
-		if (!fs.existsSync(certificatesDir)) {
-			fs.mkdirSync(certificatesDir, { recursive: true });
-		}
-
-		// Define the path for the PDF file
-		const pdfPath = path.join(
-			certificatesDir,
-			`certificate_${certificateId}.pdf`
-		);
-
-		fs.writeFileSync(pdfPath, pdfBytes);
-
-		await transporter.sendMail({
-			from: process.env.SMTP_EMIAL,
-			to: student.email,
-			subject: "Your Participation Certificate",
-			text: `Dear ${student.name}, find your participation certificate attached.`,
-			attachments: [
-				{ filename: `certificate_${certificateId}.pdf`, path: pdfPath },
-			],
-		});
-
-		fs.unlinkSync(pdfPath);
-
-		attendee.certificateIssued = true;
+	const certificatesDir = path.join(__dirname, "certificates");
+	if (!fs.existsSync(certificatesDir)) {
+		fs.mkdirSync(certificatesDir, { recursive: true });
 	}
+
+	const emailPromises = attendees.map(async (attendee) => {
+		const { student } = attendee;
+		try {
+			const certificateId = crypto.randomUUID();
+			const encryptedData = encryptAES256(
+				JSON.stringify({ certificateId, eventId, student: student._id })
+			);
+			const qrCodeImage = await QRCode.toDataURL(
+				`https://secureCertify.edu/verify/${encryptedData}`
+			);
+
+			const newCertificate = await Certificate.create({
+				certificateId,
+				event: eventId,
+				student: student._id,
+				club: event.club,
+				certificateHash: encryptedData,
+				qrCode: qrCodeImage,
+				activityPoints: event.activityPoints,
+			});
+
+			const populatedCertificate = await Certificate.findById(
+				newCertificate._id
+			)
+				.populate("student", "name email registrationNumber")
+				.populate("event", "title activityPoints")
+				.exec();
+
+			const pdfBytes = await generatePDF(populatedCertificate, qrCodeImage);
+
+			const pdfPath = path.join(
+				certificatesDir,
+				`certificate_${certificateId}.pdf`
+			);
+
+			await fs.promises.writeFile(pdfPath, pdfBytes);
+
+			await transporter.sendMail({
+				from: process.env.SMTP_EMAIL,
+				to: student.email,
+				subject: "Your Participation Certificate",
+				text: `Dear ${student.name}, find your participation certificate attached.`,
+				attachments: [
+					{ filename: `certificate_${certificateId}.pdf`, path: pdfPath },
+				],
+			});
+
+			await fs.promises.unlink(pdfPath);
+
+			attendee.certificateIssued = true;
+		} catch (error) {
+			console.error(
+				`Error processing attendee ${student.name} (${student.email}):`,
+				error
+			);
+		}
+	});
+
+	await Promise.all(emailPromises);
 	await event.save();
 
 	res.status(200).json({
@@ -277,5 +292,29 @@ exports.revokeCertificate = catchAsync(async (req, res) => {
 	res.status(200).json({
 		message: `Certificate ${certificateId} has been revoked.`,
 		certificate,
+	});
+});
+
+exports.getCertificatesByEventId = catchAsync(async (req, res) => {
+	const { eventId } = req.params;
+
+	const event = await Event.findById(eventId);
+	if (!event) {
+		return res.status(404).json({ message: "Event not found" });
+	}
+
+	const certificates = await Certificate.find({ event: eventId })
+		.populate("student", "name email registrationNumber") // Populate student details
+		.select("certificateId student");
+
+	if (!certificates.length) {
+		return res
+			.status(404)
+			.json({ message: "No certificates found for this event" });
+	}
+
+	res.status(200).json({
+		message: "Certificates retrieved successfully",
+		certificates,
 	});
 });
