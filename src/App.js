@@ -13,6 +13,7 @@ import MarkAttendance from "./Components/Cordinators/MarkAttendance";
 import Analytics from "./Components/Cordinators/Analytics";
 import RevokeCertificate from "./Components/Cordinators/RevokeCertificate";
 import VerifyCertificate from "./Components/Cordinators/VerifyCertificate";
+import Profile from "./Components/Cordinators/Profile";
 
 import ViewEvent from "./Components/Cordinators/ViewEvent";
 
@@ -55,6 +56,15 @@ function App() {
                 element={
                   <>
                     <MarkAttendance />
+                  </>
+                }
+              />
+              <Route
+                exact
+                path="edit-profile"
+                element={
+                  <>
+                    <Profile />
                   </>
                 }
               />

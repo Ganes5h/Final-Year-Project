@@ -173,7 +173,7 @@ const MarkAttendance = () => {
                                 : "bg-red-100 text-red-800 hover:bg-red-200"
                             }`}
                           >
-                            {participant.attendance ? "Present" : "Not Present"}
+                            {participant.attendance ? "Present" : "Absent"}
                           </button>
                         </td>
                         {/* <td>

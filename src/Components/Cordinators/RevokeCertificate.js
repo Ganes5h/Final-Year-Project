@@ -35,7 +35,7 @@ const RevokeCertificate = () => {
   const handleViewMore = async (event) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/certificate/getCertificateByEvents/${event._id}`
+        `${BaseUrl}/certificate/getCertificateByEvents/${event._id}`
       );
 
       // Transform the certificates to match the previous structure
@@ -91,7 +91,7 @@ const RevokeCertificate = () => {
       console.log(updData);
 
       const response = await axios.post(
-        "http://localhost:4000/api/certificate/revoke-certificate",
+        `${BaseUrl}/certificate/revoke-certificate`,
         updData
       );
 
@@ -116,14 +116,14 @@ const RevokeCertificate = () => {
   const fetchRevokedCertificates = async (eventId) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/certificate/getRevokeCertificate/${eventId}`
+        `${BaseUrl}/certificate/getRevokeCertificate/${eventId}`
       );
 
       setRevokedParticipants(response.data.event.revokedCertificates);
       setShowRevokedStudents(true);
     } catch (error) {
       console.error("Error fetching revoked certificates:", error);
-      toast.error("Failed to fetch revoked certificates");
+      toast.error("No Revoked Certificate");
     }
   };
 

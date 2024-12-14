@@ -57,29 +57,31 @@ const VerifyCertificate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-900 to-blue-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       {/* Back Button */}
-      <button className="absolute top-4 left-4 flex items-center space-x-2 bg-white rounded-lg px-4 py-2 text-sm font-medium transition-all hover:bg-blue-50 hover:shadow-lg">
+      <button className="absolute top-4 left-4 flex items-center space-x-2 bg-white rounded-xl px-4 py-2 text-sm font-medium transition-all hover:bg-gray-50 shadow-sm hover:shadow-md border border-gray-100">
         <ArrowLeft className="w-4 h-4" />
         <span>Go Back</span>
       </button>
 
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-xl rounded-lg overflow-hidden">
+      <div className="w-full max-w-md bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl overflow-hidden border border-gray-100">
         {/* Header */}
-        <div className="p-6 pb-4">
-          <div className="flex items-center justify-center space-x-2">
-            <QrCode className="w-6 h-6 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">
+        <div className="p-4 pb-6">
+          <div className="flex items-center justify-center space-x-3">
+            <div className="p-2 bg-indigo-50 rounded-xl">
+              <QrCode className="w-6 h-6 text-indigo-600" />
+            </div>
+            <h1 className="text-2xl font-semibold text-gray-900">
               Scan Certificate
             </h1>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-6 pb-6">
+        <div className="px-8 pb-8">
           <div className="space-y-6">
             {/* Scanner Container */}
-            <div className="relative rounded-lg overflow-hidden bg-gray-900 aspect-square max-w-sm mx-auto">
+            <div className="relative rounded-xl overflow-hidden bg-gray-900 aspect-square max-w-sm mx-auto shadow-lg">
               <QrScanner
                 delay={300}
                 className="w-full h-full object-cover"
@@ -87,30 +89,39 @@ const VerifyCertificate = () => {
                 onScan={handleScan}
               />
               {/* Scanner Overlay */}
-              <div className="absolute inset-0 border-2 border-blue-400 opacity-50">
-                <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-blue-500"></div>
-                <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-blue-500"></div>
-                <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-blue-500"></div>
-                <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-blue-500"></div>
+              <div className="absolute inset-0">
+                <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-indigo-400 rounded-tl-xl"></div>
+                <div className="absolute top-0 right-0 w-20 h-20 border-t-4 border-r-4 border-indigo-400 rounded-tr-xl"></div>
+                <div className="absolute bottom-0 left-0 w-20 h-20 border-b-4 border-l-4 border-indigo-400 rounded-bl-xl"></div>
+                <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-indigo-400 rounded-br-xl"></div>
               </div>
             </div>
 
             {/* Scan Result */}
             {scanResult && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-gray-600">Scanned Result:</p>
-                <p className="font-medium text-gray-900 break-all">
-                  {scanResult}
-                </p>
-                {loading && (
-                  <p className="text-sm text-blue-500">Verifying...</p>
-                )}
+              <div className="mt-6 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-indigo-600">
+                    Scanned Result:
+                  </p>
+                  <p className="font-medium text-gray-900 break-all">
+                    {scanResult}
+                  </p>
+                  {loading && (
+                    <p className="text-sm text-indigo-500 flex items-center space-x-2">
+                      <span className="block w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
+                      <span>Verifying...</span>
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Instructions */}
-            <div className="text-center text-sm text-gray-500">
-              <p>Position the QR code within the frame to scan</p>
+            <div className="text-center">
+              <p className="text-sm text-gray-500">
+                Position the QR code within the frame to scan
+              </p>
             </div>
           </div>
         </div>

@@ -372,9 +372,9 @@ export default function Dashboard() {
                   src={isAuthenticated ? profileImageUrl : ""}
                   alt={user?.name || "User Avatar"}
                 ></Avatar>
-                Edit Profile
+                Profile
               </MenuItem>
-              
+
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
