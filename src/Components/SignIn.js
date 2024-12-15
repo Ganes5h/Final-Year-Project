@@ -16,7 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 // import BaseUrl from "../BaseUrl/BaseUrl";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/features/AuthSlice";
-import Logo from "../assets/logo.png";
+import Logo from "../assets/Logo.png";
 
 const SignIn = () => {
   const [showSignIn, setShowSignIn] = useState(false);

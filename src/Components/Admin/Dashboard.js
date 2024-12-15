@@ -1,28 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { IconButton, Avatar, Menu, MenuItem, Typography } from "@mui/material";
-import SecurityIcon from "@mui/icons-material/Security";
-import GroupIcon from "@mui/icons-material/Group";
+
 import { Outlet, Link } from "react-router-dom";
-// import NotificationsIcon from "@mui/icons-material/Notifications";
-// import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
 import { List, ListItem, ListItemText, Collapse, Divider } from "@mui/material";
-import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { motion } from "framer-motion";
-// Import any icons you need
-// import HomeIcon from "@mui/icons-material/Home";
-// import InfoIcon from "@mui/icons-material/Info";
-// import SettingsIcon from "@mui/icons-material/Settings";
-import RemoveModeratorIcon from "@mui/icons-material/RemoveModerator";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AssessmentIcon from "@mui/icons-material/Assessment";
+
+import DeleteIcon from "@mui/icons-material/Delete";
 // import BarChartIcon from "@mui/icons-material/BarChart";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 // import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 // import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-import Logo from "../../assets/logo.png";
+import Logo from "../../assets/Logo.png";
 // import Logo from "../assets/Logo.png";
 
 // import axios from "axios";
@@ -53,50 +44,17 @@ export default function Dashboard() {
     : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQKYK3Z-brarkS6HlNUOYHt1vH03rOs_aebA&s";
 
   const routes = [
-    { path: "analytics", label: "Dashboard", icon: DashboardIcon },
-    // {
-    //   path: "events",
-    //   label: "Events",
-    //   icon: AssessmentIcon,
-    // },
+    { path: "create-club", label: "Create Club", icon: AddCircleIcon },
 
     {
-      path: "events",
-      label: "Events",
-      icon: AssessmentIcon,
-      submenu: [
-        {
-          path: "events/create-event",
-          label: "Create Event",
-          icon: AddCircleIcon,
-        },
-        {
-          path: "events/view-events",
-          label: "View Events",
-          icon: EventNoteIcon,
-        },
-      ],
-    },
-
-    {
-      path: "mark-attendance",
-      label: "Mark Attendance",
-      icon: GroupIcon,
+      path: "view-clubs",
+      label: "View Clubs",
+      icon: EventNoteIcon,
     },
     {
-      path: "issue-certificate",
-      label: "Issue Certificate",
-      icon: SecurityIcon,
-    },
-    {
-      path: "verify-certificate",
-      label: "Verify Certificate",
-      icon: ImageSearchIcon,
-    },
-    {
-      path: "revoke-certificate",
-      label: "Revoke Certificate",
-      icon: RemoveModeratorIcon,
+      path: "delete-club",
+      label: "Delete Club",
+      icon: DeleteIcon,
     },
 
     // { path: "/", label: "Home", icon: HomeIcon },
@@ -105,9 +63,6 @@ export default function Dashboard() {
     setOpenPlayground(!openPlayground);
   };
   const navigate = useNavigate();
-  const startPracticing = () => {
-    navigate("/dashboard-layout/generate");
-  };
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleLogout = () => {
@@ -130,7 +85,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    navigate("/dashboard-layout/analytics");
+    navigate("/dashboard-layout/create-club");
   }, []);
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);

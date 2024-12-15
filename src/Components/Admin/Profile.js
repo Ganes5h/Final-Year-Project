@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 const Profile = () => {
   const { user, club } = useSelector((state) => state.auth);
-  console.log(club, user);
+  console.log(user);
   const ImgUrl =
     "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
 
@@ -41,7 +41,7 @@ const Profile = () => {
                 </h1>
                 <div className="flex items-center mt-2 space-x-4">
                   <span className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 capitalize">
-                    {club.name}-{user.role.replace("_", " ")}
+                    {user.role.replace("_", " ")}
                   </span>
                   <span className="flex items-center text-gray-600">
                     <Building2 className="w-4 h-4 mr-1" />

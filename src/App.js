@@ -11,16 +11,12 @@ import {
 } from "./firebaseSetup";
 import { useEffect } from "react";
 //cordinators import
-import DashboardLayout from "./Components/Cordinators/Dashboard";
-import CreateEvent from "./Components/Cordinators/CreateEvent";
-import IssueCertificate from "./Components/Cordinators/IssueCertificate";
-import MarkAttendance from "./Components/Cordinators/MarkAttendance";
-import Analytics from "./Components/Cordinators/Analytics";
-import RevokeCertificate from "./Components/Cordinators/RevokeCertificate";
-import VerifyCertificate from "./Components/Cordinators/VerifyCertificate";
-import Profile from "./Components/Cordinators/Profile";
+import DashboardLayout from "./Components/Admin/Dashboard";
 
-import ViewEvent from "./Components/Cordinators/ViewEvent";
+import Profile from "./Components/Admin/Profile";
+import CreateClub from "./Components/Admin/CreateClub";
+import ViewClubs from "./Components/Admin/ViewClubs";
+import DeleteClub from "./Components/Admin/DeleteClub";
 
 function App() {
   //   const [loading, setLoading] = useState(false);
@@ -59,19 +55,19 @@ function App() {
             >
               <Route
                 index
-                path="analytics"
+                path="create-club"
                 element={
                   <>
-                    <Analytics />
+                    <CreateClub />
                   </>
                 }
               />
               <Route
                 index
-                path="mark-attendance"
+                path="view-clubs"
                 element={
                   <>
-                    <MarkAttendance />
+                    <ViewClubs />
                   </>
                 }
               />
@@ -84,57 +80,13 @@ function App() {
                   </>
                 }
               />
-              {/* <Route
-                exact
-                path="events"
-                element={
-                  <>
-                    <CreateEvent />
-                  </>
-                }
-              /> */}
+
               <Route
                 exact
-                path="issue-certificate"
+                path="delete-club"
                 element={
                   <>
-                    <IssueCertificate />
-                  </>
-                }
-              />
-              <Route
-                exact
-                path="verify-certificate"
-                element={
-                  <>
-                    <VerifyCertificate />
-                  </>
-                }
-              />
-              <Route
-                exact
-                path="revoke-certificate"
-                element={
-                  <>
-                    <RevokeCertificate />
-                  </>
-                }
-              />
-              <Route
-                exact
-                path="events/create-event"
-                element={
-                  <>
-                    <CreateEvent />
-                  </>
-                }
-              />
-              <Route
-                exact
-                path="events/view-events"
-                element={
-                  <>
-                    <ViewEvent />
+                    <DeleteClub />
                   </>
                 }
               />
