@@ -22,7 +22,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 // import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 // import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-
+import Logo from "../../assets/logo.png";
 // import Logo from "../assets/Logo.png";
 
 // import axios from "axios";
@@ -158,41 +158,17 @@ export default function Dashboard() {
         }}
       >
         <div className="p-4 text-center font-bold text-xl">
-          <div className="relative flex items-center">
-            <motion.h1
-              className="text-2xl md:text-3xl font-extrabold tracking-wide"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-            >
-              <a href="/" className="inline-flex items-center">
-                {/* <img
-                  src={Logo}
-                  alt="Comany Logo"
-                  className="mx-4"
-                  width={30}
-                ></img> */}
-
-                <motion.span
-                  // className="text-white"
-                  initial={{ letterSpacing: "0.1em" }}
-                  animate={{ letterSpacing: "normal" }}
-                  transition={{ delay: 0.5, duration: 1 }}
-                >
-                  Secure
-                </motion.span>
-                <motion.span
-                  className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 ml-2"
-                  initial={{ backgroundPosition: "200% center" }}
-                  animate={{ backgroundPosition: "0% center" }}
-                  transition={{ duration: 3, ease: "linear" }}
-                >
-                  Certify
-                </motion.span>
-              </a>
-            </motion.h1>
+          <div className="relative flex items-center justify-center">
+            <a href="/" className="inline-flex items-center">
+              <img
+                src={Logo}
+                alt="Company Logo"
+                className="w-32 h-auto object-contain"
+              />
+            </a>
           </div>
         </div>
+
         <List
           component="nav"
           className="mt-10 flex flex-col items-center text-center"

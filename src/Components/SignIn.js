@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 // import BaseUrl from "../BaseUrl/BaseUrl";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/features/AuthSlice";
+import Logo from "../assets/logo.png";
 
 const SignIn = () => {
   const [showSignIn, setShowSignIn] = useState(false);
@@ -91,15 +92,15 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
+          <div className="flex justify-between h-35 items-center py-2">
             <div className="flex items-center">
-              <Shield className="w-8 h-8 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-800">
-                Secure Certify
-              </span>
+              <img
+                src={Logo}
+                alt="Secure Certify Logo"
+                className="ml-2 w-28 h-auto object-contain"
+              />
             </div>
             <button
               onClick={() => setShowSignIn(!showSignIn)}
