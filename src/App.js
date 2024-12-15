@@ -4,7 +4,12 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignIn from "./Components/SignIn";
 import "./App.css";
 import ProtectedRoute from "./Components/ProtectedRoute";
-
+import {
+  requestNotificationPermission,
+  handleIncomingMessages,
+  refreshToken,
+} from "./firebaseSetup";
+import { useEffect } from "react";
 //cordinators import
 import DashboardLayout from "./Components/Cordinators/Dashboard";
 import CreateEvent from "./Components/Cordinators/CreateEvent";
@@ -19,7 +24,18 @@ import ViewEvent from "./Components/Cordinators/ViewEvent";
 
 function App() {
   //   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    // Request notification permission
+    requestNotificationPermission();
 
+    // Handle incoming notifications
+    handleIncomingMessages();
+
+    // Regularly refresh tokens
+    const interval = setInterval(refreshToken, 60 * 60 * 1000); // Refresh every hour
+
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="App">
       <Box justifyContent="center" alignItems="center" minHeight="100vh">
