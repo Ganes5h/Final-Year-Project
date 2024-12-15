@@ -11,13 +11,22 @@ router.route("/updateEvent/:id").patch(eventController.updateEventDetails);
 router.route("/deleteEvent/:id").delete(eventController.deleteEvent);
 
 router
-	.route("/participate/:eventId/:userId")
-	.post(eventController.participantRegister);
+  .route("/participate/:eventId/:userId")
+  .post(eventController.participantRegister);
 
 router.route("/getParticipants/:eventId").get(eventController.getParticipants);
 
 router
-	.route("/markAttendance/:eventId/:studentId")
-	.get(eventController.markAttendance);
+  .route("/markAttendance/:eventId/:studentId")
+  .get(eventController.markAttendance);
 
+//Report
+router
+  .route("/clubs/:clubId/events/:eventId/report")
+  .get(eventController.generateSpecificEventReport);
+
+router.route("/:clubId/stats").get(eventController.getClubEventStats);
+
+router.route("/:eventId/stats").get(eventController.getEventDetails);
+router.route("/users/:userId/profile").get(eventController.getUserProfile);
 module.exports = router;
