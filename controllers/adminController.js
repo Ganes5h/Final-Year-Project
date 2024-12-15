@@ -198,6 +198,84 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
+    // Find user by email and include the password field
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Check if the user's role is admin
+    if (user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied. Only admins can log in via this endpoint.",
+      });
+    }
+
+    // Check if the user's password is defined before comparing
+    if (!user.password) {
+      return res.status(500).json({ message: "User password is missing" });
+    }
+
+    // Compare passwords
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1d" } // Set expiration for the token
+    );
+
+    // Prepare user data for response
+    const { password: _, ...userData } = user.toObject();
+
+    // Respond with the token and user data
+    res.status(200).json({
+      message: "Admin login successful",
+      token,
+      user: userData,
+    });
+  } catch (error) {
+    console.error("Error logging in admin:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getUserNamesAndIds = async (req, res) => {
+  try {
+    // Fetch users, selecting only `name` and `_id` fields
+    const users = await User.find({}, "name _id role");
+
+    // Check if users exist
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found." });
+    }
+
+    // Respond with the user data
+    res.status(200).json({
+      message: "User names and IDs retrieved successfully.",
+      users,
+    });
+  } catch (error) {
+    console.error("Error fetching user names and IDs:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // Log out user and destroy session
 exports.logoutUser = (req, res) => {
   req.session = null; // Clears the session cookie
