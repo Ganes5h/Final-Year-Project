@@ -13,6 +13,7 @@ import {
   Box,
   TextField,
 } from "@material-ui/core";
+import EventNoteIcon from "@mui/icons-material/EventNote";
 
 import {
   Calendar,
@@ -351,20 +352,8 @@ const ViewEvents = () => {
                   onClick={() => handleViewMore(event)}
                   className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 hover:translate-x-1"
                 >
-                  SEE MORE
-                  <svg
-                    className="w-4 h-4 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                  See More
+                  <EventNoteIcon fontSize="medium" className=" ml-2" />
                 </button>
               </div>
             </div>

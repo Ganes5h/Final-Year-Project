@@ -58,7 +58,7 @@ export default function Dashboard() {
   const dispatch = useDispatch();
 
   const profileImageUrl = user?.profileImage
-    ? `https://your-backend-domain.com/images/${user.profileImage}` // Update this URL to match your backend's image hosting URL
+    ? "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg" // Update this URL to match your backend's image hosting URL
     : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQKYK3Z-brarkS6HlNUOYHt1vH03rOs_aebA&s";
 
   const routes = [

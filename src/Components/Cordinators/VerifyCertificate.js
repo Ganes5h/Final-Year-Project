@@ -57,7 +57,7 @@ const VerifyCertificate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className=" bg-gray-50 flex items-center justify-center p-8">
       {/* Back Button */}
       <button className="absolute top-4 left-4 flex items-center space-x-2 bg-white rounded-xl px-4 py-2 text-sm font-medium transition-all hover:bg-gray-50 shadow-sm hover:shadow-md border border-gray-100">
         <ArrowLeft className="w-4 h-4" />
@@ -66,7 +66,7 @@ const VerifyCertificate = () => {
 
       <div className="w-full max-w-md bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl overflow-hidden border border-gray-100">
         {/* Header */}
-        <div className="p-4 pb-6">
+        <div className="p-4 pb-3">
           <div className="flex items-center justify-center space-x-3">
             <div className="p-2 bg-indigo-50 rounded-xl">
               <QrCode className="w-6 h-6 text-indigo-600" />
@@ -78,7 +78,7 @@ const VerifyCertificate = () => {
         </div>
 
         {/* Content */}
-        <div className="px-8 pb-8">
+        <div className="px-8 pb-4">
           <div className="space-y-6">
             {/* Scanner Container */}
             <div className="relative rounded-xl overflow-hidden bg-gray-900 aspect-square max-w-sm mx-auto shadow-lg">

@@ -3,6 +3,7 @@ import axios from "axios";
 import BaseUrl from "../../BaseUrl/BaseUrl";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PortraitIcon from "@mui/icons-material/Portrait";
 
 const IssueCertificate = () => {
   const [events, setEvents] = useState([]);
@@ -242,19 +243,7 @@ const IssueCertificate = () => {
                   className="inline-flex  items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 hover:translate-x-1"
                 >
                   View Students
-                  <svg
-                    className="w-4 h-4 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                  <PortraitIcon className="ml-2" fontSize="medium" />
                 </button>
               </div>
             </div>

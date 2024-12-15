@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import BaseUrl from "../../BaseUrl/BaseUrl";
-
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 const MarkAttendance = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -270,19 +270,7 @@ const MarkAttendance = () => {
                   className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 hover:translate-x-1"
                 >
                   Mark Attendance
-                  <svg
-                    className="w-4 h-4 ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                  <EventAvailableIcon fontSize="medium" className=" ml-2" />
                 </button>
               </div>
             </div>

@@ -13,6 +13,7 @@ import {
 
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
+import TodayIcon from '@mui/icons-material/Today';
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import BaseUrl from "../../BaseUrl/BaseUrl";
@@ -151,7 +152,7 @@ function CreateEvent() {
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-2xl mt-10">
       <div className="bg-blue-500 text-white py-6 px-8 rounded-t-lg">
-        <h1 className="text-3xl font-bold">Create Event</h1>
+        <h1 className="text-3xl font-bold">Create Event {<TodayIcon fontSize="large"/>}</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 p-8">

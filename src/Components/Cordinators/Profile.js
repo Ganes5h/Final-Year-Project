@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
   console.log(user);
+  const ImgUrl="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
+
 
   const InfoItem = ({ icon: Icon, label, value }) => (
     <div className="flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100">
@@ -33,7 +35,7 @@ const Profile = () => {
               {/* Profile Image */}
               <div className="-mt-16 md:-mt-24">
                 <img
-                  src={user.profileImage}
+                  src={ImgUrl}
                   alt={user.name}
                   className="w-32 h-32 md:w-40 md:h-40 rounded-xl border-4 border-white shadow-lg object-cover"
                 />
