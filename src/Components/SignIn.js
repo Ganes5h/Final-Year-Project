@@ -10,10 +10,10 @@ import {
   Timer,
   HeadphonesIcon,
 } from "lucide-react";
-import axios from "axios";
+// import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import BaseUrl from "../BaseUrl/BaseUrl";
+// import BaseUrl from "../BaseUrl/BaseUrl";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/features/AuthSlice";
 

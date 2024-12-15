@@ -8,24 +8,22 @@ import {
   MapPin,
   Award,
   Link2,
-  FormInput,
 } from "lucide-react";
 
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
-import TodayIcon from '@mui/icons-material/Today';
+import TodayIcon from "@mui/icons-material/Today";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import BaseUrl from "../../BaseUrl/BaseUrl";
 
 function CreateEvent() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, club } = useSelector((state) => state.auth);
 
-  // [Previous state and handlers remain the same until the return statement]
   const [eventDetails, setEventDetails] = useState({
     title: "",
     description: "",
-    club: "",
+    club: club._id,
     startDate: "",
     endDate: "",
     registrationDeadline: "",
@@ -33,16 +31,12 @@ function CreateEvent() {
     activityPoints: null,
     venue: "",
     whatsappLink: "",
-    registrationForm: {
-      fields: [{ name: "", type: "text", required: false, options: [] }],
-    },
     status: "upcoming",
     createdBy: user?._id,
   });
 
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
-  // [All your existing handlers remain the same]
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -60,71 +54,25 @@ function CreateEvent() {
     }
   };
 
-  const handleFieldChange = (index, e) => {
-    const { name, value } = e.target;
-    const fields = [...eventDetails.registrationForm.fields];
-    fields[index][name] = value;
-    setEventDetails({ ...eventDetails, registrationForm: { fields } });
-  };
-
-  const addField = () => {
-    setEventDetails({
-      ...eventDetails,
-      registrationForm: {
-        fields: [
-          ...eventDetails.registrationForm.fields,
-          { name: "", type: "text", required: false, options: [] },
-        ],
-      },
-    });
-  };
-
-  const removeField = (index) => {
-    const fields = [...eventDetails.registrationForm.fields];
-    fields.splice(index, 1);
-    setEventDetails({ ...eventDetails, registrationForm: { fields } });
-  };
-
-  const addOption = (index) => {
-    const fields = [...eventDetails.registrationForm.fields];
-    fields[index].options.push("");
-    setEventDetails({ ...eventDetails, registrationForm: { fields } });
-  };
-
-  const removeOption = (fieldIndex, optionIndex) => {
-    const fields = [...eventDetails.registrationForm.fields];
-    fields[fieldIndex].options.splice(optionIndex, 1);
-    setEventDetails({ ...eventDetails, registrationForm: { fields } });
-  };
-
-  const handleOptionChange = (fieldIndex, optionIndex, value) => {
-    const fields = [...eventDetails.registrationForm.fields];
-    fields[fieldIndex].options[optionIndex] = value;
-    setEventDetails({ ...eventDetails, registrationForm: { fields } });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Assuming eventDetails is the original data object
     const updatedEventDetails = {
       ...eventDetails,
-      maxParticipants: Number(eventDetails.maxParticipants), // Convert to number
-      activityPoints: Number(eventDetails.activityPoints), // Convert to number
-      createdBy: String(eventDetails.createdBy), // convert to String
+      maxParticipants: Number(eventDetails.maxParticipants),
+      activityPoints: Number(eventDetails.activityPoints),
+      createdBy: String(eventDetails.createdBy),
     };
 
-    console.log(updatedEventDetails);
-
     axios
-      .post(`${BaseUrl}/event/create`, updatedEventDetails)
+      .post(`${BaseUrl}/notifications/create-event`, updatedEventDetails)
       .then((response) => {
         console.log("Event created successfully:", response.data);
         toast.success("Event Created Successfully");
         setEventDetails({
           title: "",
           description: "",
-          club: "",
+          club: club._id,
           startDate: "",
           endDate: "",
           registrationDeadline: "",
@@ -132,9 +80,6 @@ function CreateEvent() {
           activityPoints: null,
           venue: "",
           whatsappLink: "",
-          registrationForm: {
-            fields: [{ name: "", type: "text", required: false, options: [] }],
-          },
           status: "upcoming",
           createdBy: user?._id,
         });
@@ -152,7 +97,9 @@ function CreateEvent() {
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-2xl mt-10">
       <div className="bg-blue-500 text-white py-6 px-8 rounded-t-lg">
-        <h1 className="text-3xl font-bold">Create Event {<TodayIcon fontSize="large"/>}</h1>
+        <h1 className="text-3xl font-bold">
+          Create Event {<TodayIcon fontSize="large" />}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 p-8">
@@ -182,20 +129,6 @@ function CreateEvent() {
             className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             required
           ></textarea>
-        </div>
-
-        <div>
-          <label className="block text-sm text-start font-medium">
-            Club ID*
-          </label>
-          <input
-            type="text"
-            name="club"
-            value={eventDetails.club}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            required
-          />
         </div>
 
         <div className="grid grid-cols-2 gap-6">
@@ -308,111 +241,6 @@ function CreateEvent() {
           />
         </div>
 
-        {/* Registration Form Fields */}
-        <div className="mt-6">
-          <h2 className="text-2xl font-bold mb-4">Registration Form Fields</h2>
-          {eventDetails.registrationForm.fields.map((field, index) => (
-            <div key={index} className="border rounded-md p-6 mb-4 relative">
-              <button
-                type="button"
-                onClick={() => removeField(index)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              >
-                <XCircleIcon size={20} />
-              </button>
-              <div>
-                <label className="block text-sm text-start font-medium">
-                  Field Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={field.name}
-                  onChange={(e) => handleFieldChange(index, e)}
-                  className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div className="mt-4">
-                <label className="block text-sm text-start font-medium">
-                  Field Type
-                </label>
-                <select
-                  name="type"
-                  value={field.type}
-                  onChange={(e) => handleFieldChange(index, e)}
-                  className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  required
-                >
-                  <option value="text">Text</option>
-                  <option value="email">Email</option>
-                  <option value="number">Number</option>
-                  <option value="select">Select</option>
-                  <option value="checkbox">Checkbox</option>
-                </select>
-              </div>
-              <div className="mt-4 flex">
-                <label className="block text-sm justify-start font-medium mr-2">
-                  Required
-                </label>
-                <input
-                  type="checkbox"
-                  name="required"
-                  checked={field.required}
-                  onChange={(e) =>
-                    handleFieldChange(index, {
-                      ...e,
-                      target: { name: "required", value: e.target.checked },
-                    })
-                  }
-                />
-              </div>
-              {/* Conditional Options Section */}
-              {(field.type === "select" || field.type === "checkbox") && (
-                <div className="mt-4">
-                  {/* <label className="block text-sm font-medium">Options</label> */}
-                  {field.options.map((option, optionIndex) => (
-                    <div key={optionIndex} className="flex items-center mt-2">
-                      <input
-                        type="text"
-                        value={option}
-                        onChange={(e) =>
-                          handleOptionChange(index, optionIndex, e.target.value)
-                        }
-                        className="w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 mr-2"
-                        placeholder={`Option ${optionIndex + 1}`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeOption(index, optionIndex)}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <XCircleIcon size={20} />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => addOption(index)}
-                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                  >
-                    Add Option
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-          <div className="flex justify-start">
-            <button
-              type="button"
-              onClick={addField}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              Add Field
-            </button>
-          </div>
-        </div>
-
         <div className="flex justify-between">
           <button
             type="submit"
@@ -431,8 +259,7 @@ function CreateEvent() {
         </div>
       </form>
 
-      {/* New Preview Modal */}
-
+      {/* Preview Modal */}
       {showPreviewModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen p-4">
@@ -453,8 +280,6 @@ function CreateEvent() {
               {/* Content */}
               <div className="max-h-[70vh] overflow-y-auto">
                 <div className="p-6 space-y-8">
-                  {/* Event Details Section - Keep existing code until Registration Form Fields */}
-
                   {/* Main Event Details */}
                   <div className="space-y-4">
                     <h2 className="text-2xl font-bold text-gray-900">
@@ -464,9 +289,9 @@ function CreateEvent() {
                       {eventDetails.description || "No description provided"}
                     </p>
 
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    {/* <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                       Club ID: {eventDetails.club}
-                    </span>
+                    </span> */}
                   </div>
 
                   <div className="h-px bg-gray-200" />
@@ -574,101 +399,6 @@ function CreateEvent() {
                         </a>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="h-px bg-gray-200" />
-
-                  {/* Registration Form Fields - Modified Section */}
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-indigo-100 rounded-lg">
-                        <FormInput className="h-5 w-5 text-indigo-600" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900">
-                        Registration Form
-                      </h3>
-                    </div>
-
-                    <form className="space-y-6">
-                      {eventDetails.registrationForm.fields.map(
-                        (field, index) => (
-                          <div
-                            key={index}
-                            className="bg-gray-50 rounded-lg p-4 border border-gray-200"
-                          >
-                            <label className="block mb-2 text-start">
-                              <span className="font-medium text-gray-900">
-                                {field.name || `Field ${index + 1}`}
-                                {field.required && (
-                                  <span className="text-red-500 ml-1">*</span>
-                                )}
-                              </span>
-
-                              {field.type === "text" && (
-                                <input
-                                  type="text"
-                                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
-                                  required={field.required}
-                                />
-                              )}
-
-                              {field.type === "email" && (
-                                <input
-                                  type="email"
-                                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
-                                  required={field.required}
-                                />
-                              )}
-
-                              {field.type === "number" && (
-                                <input
-                                  type="number"
-                                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
-                                  required={field.required}
-                                />
-                              )}
-
-                              {field.type === "select" && (
-                                <select
-                                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
-                                  required={field.required}
-                                >
-                                  <option value="">Select an option</option>
-                                  {field.options.map((option, idx) => (
-                                    <option key={idx} value={option}>
-                                      {option}
-                                    </option>
-                                  ))}
-                                </select>
-                              )}
-
-                              {field.type === "checkbox" && (
-                                <div className="mt-2 space-y-2">
-                                  {field.options.map((option, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="flex items-center"
-                                    >
-                                      <input
-                                        type="checkbox"
-                                        id={`${field.name}-${idx}`}
-                                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                      />
-                                      <label
-                                        htmlFor={`${field.name}-${idx}`}
-                                        className="ml-2 text-gray-700"
-                                      >
-                                        {option}
-                                      </label>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </label>
-                          </div>
-                        )
-                      )}
-                    </form>
                   </div>
                 </div>
               </div>

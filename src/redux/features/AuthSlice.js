@@ -10,12 +10,14 @@ export const loginUser = createAsyncThunk(
         headers: { "Content-Type": "application/json" },
       });
 
-      const { user, token } = response.data;
-      // Save token and user details to localStorage
+      const { user, token, club } = response.data;
+
+      // Save token, user, and club details to localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("club", JSON.stringify(club));
 
-      return { user, token };
+      return { user, token, club };
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Login failed. Please try again."
@@ -29,6 +31,7 @@ const authSlice = createSlice({
   initialState: {
     user: JSON.parse(localStorage.getItem("user")) || null,
     token: localStorage.getItem("token") || null,
+    club: JSON.parse(localStorage.getItem("club")) || null,
     isAuthenticated: !!localStorage.getItem("token"),
     loading: false,
     error: null,
@@ -37,9 +40,11 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.club = null;
       state.isAuthenticated = false;
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      localStorage.removeItem("club");
     },
   },
   extraReducers: (builder) => {
@@ -52,6 +57,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = payload.user;
         state.token = payload.token;
+        state.club = payload.club;
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, { payload }) => {

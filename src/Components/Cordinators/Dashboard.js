@@ -1,40 +1,31 @@
 import React, { useEffect, useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Avatar,
-  Menu,
-  MenuItem,
-  Badge,
-  Typography,
-} from "@mui/material";
+import { IconButton, Avatar, Menu, MenuItem, Typography } from "@mui/material";
 import SecurityIcon from "@mui/icons-material/Security";
 import GroupIcon from "@mui/icons-material/Group";
 import { Outlet, Link } from "react-router-dom";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+// import NotificationsIcon from "@mui/icons-material/Notifications";
+// import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { List, ListItem, ListItemText, Collapse, Divider } from "@mui/material";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { motion } from "framer-motion";
 // Import any icons you need
-import HomeIcon from "@mui/icons-material/Home";
-import InfoIcon from "@mui/icons-material/Info";
-import SettingsIcon from "@mui/icons-material/Settings";
+// import HomeIcon from "@mui/icons-material/Home";
+// import InfoIcon from "@mui/icons-material/Info";
+// import SettingsIcon from "@mui/icons-material/Settings";
 import RemoveModeratorIcon from "@mui/icons-material/RemoveModerator";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssessmentIcon from "@mui/icons-material/Assessment";
-import BarChartIcon from "@mui/icons-material/BarChart";
+// import BarChartIcon from "@mui/icons-material/BarChart";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+// import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 
 // import Logo from "../assets/Logo.png";
 
-import axios from "axios";
+// import axios from "axios";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/AuthSlice"; // Adjust the path to your AuthSlice file
