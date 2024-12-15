@@ -1,5 +1,6 @@
 const { Event } = require("../models/userModel");
 const { Certificate } = require("../models/userModel");
+const { User } = require("../models/userModel");
 const QRCode = require("qrcode");
 const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
 const crypto = require("crypto");
@@ -203,6 +204,9 @@ exports.bulkGenerateAndSend = catchAsync(async (req, res) => {
 			await fs.promises.unlink(pdfPath);
 
 			attendee.certificateIssued = true;
+			await User.findByIdAndUpdate(student._id, {
+				$inc: { totalActivityPoints: event.activityPoints },
+			});
 		} catch (error) {
 			console.error(
 				`Error processing attendee ${student.name} (${student.email}):`,
@@ -274,7 +278,9 @@ exports.verifyCertificate = catchAsync(async (req, res) => {
 exports.revokeCertificate = catchAsync(async (req, res) => {
 	const { certificateId, reason, revokedById } = req.body;
 
-	const certificate = await Certificate.findOne({ certificateId });
+	const certificate = await Certificate.findOne({ certificateId }).populate(
+		"student"
+	);
 	if (!certificate) {
 		return res.status(404).json({ message: "Certificate not found." });
 	}
@@ -282,12 +288,19 @@ exports.revokeCertificate = catchAsync(async (req, res) => {
 	if (certificate.status === "revoked") {
 		return res.status(400).json({ message: "Certificate is already revoked." });
 	}
+
+	const studentId = certificate.student._id;
+	const activityPoints = certificate.activityPoints || 0;
 	certificate.status = "revoked";
 	certificate.revokedReason = reason;
 	certificate.revokedDate = new Date();
 	certificate.revokedBy = revokedById;
 
 	await certificate.save();
+
+	await User.findByIdAndUpdate(studentId, {
+		$inc: { totalActivityPoints: -activityPoints },
+	});
 
 	res.status(200).json({
 		message: `Certificate ${certificateId} has been revoked.`,
