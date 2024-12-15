@@ -106,9 +106,18 @@ const createEvent = async (req, res) => {
   try {
     // Create event
     const newEvent = new Event({
-      ...req.body,
-      status: "upcoming",
-      createdBy: req.user._id,
+      title: req.body.title,
+      description: req.body.description,
+      club: req.body.club,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      registrationDeadline: req.body.registrationDeadline,
+      maxParticipants: req.body.maxParticipants,
+      activityPoints: req.body.activityPoints,
+      venue: req.body.venue,
+      whatsappLink: req.body.whatsappLink,
+      status: req.body.status || "upcoming",
+      createdBy: req.body.createdBy,
     });
     await newEvent.save({ session });
 
@@ -121,7 +130,7 @@ const createEvent = async (req, res) => {
     );
 
     // Schedule registration opening (2 hours later)
-    scheduleEventRegistration(newEvent._id);
+    // scheduleEventRegistration(newEvent._id);
 
     await session.commitTransaction();
     session.endSession();

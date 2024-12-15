@@ -21,7 +21,6 @@ exports.createEvent = catchAsync(async (req, res, next) => {
 		activityPoints: req.body.activityPoints,
 		venue: req.body.venue,
 		whatsappLink: req.body.whatsappLink,
-		registrationForm: req.body.registrationForm,
 		status: req.body.status || "upcoming",
 		createdBy: req.body.createdBy,
 		participants: [],

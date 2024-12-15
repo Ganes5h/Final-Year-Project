@@ -8,6 +8,7 @@ const clubRoutes = require("./routes/clubRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes//userRoutes");
 const pushNotificationRoutes = require("./routes/pushNotificationRoutes");
+const digiLoker = require("./routes/digilokerRoutes");
 
 const certificateRoutes = require("./routes/certificateRoutes");
 const errorController = require("./controllers/errorController");
@@ -40,6 +41,7 @@ app.use("/api/event", eventRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/certificate", certificateRoutes);
 app.use("/api/notifications", pushNotificationRoutes);
+app.use("/api/digiLoker", digiLoker);
 
 // Testing Route
 app.get("/", (req, res) => {
