@@ -76,7 +76,7 @@ const ViewClubs = () => {
                 <div className="relative h-48 overflow-hidden">
                   <img
                     // src={getClubLogo(club.logo)}
-                    src={Rotaract}
+                    src={`http://localhost:4000/uploads/clubLogos/${club.logo}`}
                     alt={`${club.name} Logo`}
                     className="w-full h-full object-cover object-center absolute inset-0 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
                   />
