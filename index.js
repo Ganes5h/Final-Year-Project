@@ -9,7 +9,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes//userRoutes");
 const pushNotificationRoutes = require("./routes/pushNotificationRoutes");
 const digiLoker = require("./routes/digilokerRoutes");
-
+const path = require("path");
 const certificateRoutes = require("./routes/certificateRoutes");
 const errorController = require("./controllers/errorController");
 const cookieSession = require("cookie-session");
@@ -24,6 +24,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect to MongoDB
 connectDB();
+
+// Serve static files from the uploads folder
+app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
 
 // Configure session middleware
 // app.use(
