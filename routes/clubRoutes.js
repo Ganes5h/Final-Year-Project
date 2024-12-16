@@ -28,6 +28,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Route to create a new club with logo upload
-router.post("/create", isAuthenticated, upload.single("logo"), createClub);
+router.post("/create", upload.single("logo"), createClub);
 
 module.exports = router;
