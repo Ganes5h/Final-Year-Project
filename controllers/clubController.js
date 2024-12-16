@@ -55,14 +55,51 @@ if (!fs.existsSync(logoDir)) {
 //   }
 // };
 
+// exports.createClub = async (req, res) => {
+//   try {
+//     const { name, description, coordinators, createdBy } = req.body;
+//     const logo = req.file?.filename; // Get the filename of the uploaded logo
+
+//     // Check if a club with the same name already exists
+//     const existingClub = await Club.findOne({ name });
+//     if (existingClub) {
+//       return res
+//         .status(400)
+//         .json({ message: "Club with this name already exists." });
+//     }
+
+//     // Create the club
+//     const newClub = new Club({
+//       name,
+//       description,
+//       logo, // Save the filename in the database
+//       coordinators,
+//       createdBy,
+//     });
+
+//     await newClub.save();
+
+//     res.status(201).json({
+//       message: "Club created successfully.",
+//       club: newClub,
+//     });
+//   } catch (error) {
+//     console.error("Error creating club:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 exports.createClub = async (req, res) => {
   try {
     const { name, description, coordinators, createdBy } = req.body;
-    const logo = req.file?.filename; // Get the filename of the uploaded logo
 
     // Check if a club with the same name already exists
     const existingClub = await Club.findOne({ name });
     if (existingClub) {
+      // If a logo was uploaded, remove it
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
       return res
         .status(400)
         .json({ message: "Club with this name already exists." });
@@ -72,7 +109,7 @@ exports.createClub = async (req, res) => {
     const newClub = new Club({
       name,
       description,
-      logo, // Save the filename in the database
+      logo: req.file ? req.file.filename : null, // Save only filename
       coordinators,
       createdBy,
     });
@@ -84,12 +121,16 @@ exports.createClub = async (req, res) => {
       club: newClub,
     });
   } catch (error) {
+    // If a logo was uploaded, remove it in case of an error
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
     console.error("Error creating club:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
-
 
 exports.getAllClubs = async (req, res) => {
   try {
