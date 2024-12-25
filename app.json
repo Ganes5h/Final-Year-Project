@@ -16,13 +16,21 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.avinashhh5.SCUserApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "API_URL": "https://5c96-103-42-75-211.ngrok-free.app/api",
+      "eas": {
+        "projectId": "f354f9b4-3c5c-4d41-8bf5-1b49ccb6252d"
+      }
     }
   }
 }
