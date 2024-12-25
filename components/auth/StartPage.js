@@ -66,7 +66,9 @@ const StartPage = ({ navigation }) => {
       </View>
 
       <Text numberOfLines={4} style={styles.paraText}>
-        Innovative solution for detecting, protecting, and managing personally identifiable information across digital platforms. Our platform helps organizations maintain compliance, enhance data security, and build trust with advanced privacy tools.
+      dinator website : The coordinator website can create a event, view events, update events and delete events, mark attendance for participants for each event, issue certificate for those who have attended the event and view issued certificate, the certificate has qr code involving hash which is encrypted that is pdf which is mailed when issued, by scanning the hash is decrypted qr the coordinator can verify the validate the certificate i.e valid or invalid and also they can revoke it for any reason. They can have stats for each event where the coordinators can download the report.
+Student app: Where user can participate for the event, get notifications for the event and stats about the points and all also it has digi locker where user can store their certificates
+Faculty app: Where faculties can verify the certificate and validate if true.
       </Text>
 
       <TouchableOpacity style={styles.button} onPress={handleStarted} >
