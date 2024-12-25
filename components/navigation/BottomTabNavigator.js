@@ -47,7 +47,7 @@ const BottomTabNavigator = () => {
                 options={{ headerShown: false }}
             />
             <Tab.Screen
-                name="Events"
+                name="All Events"
                 component={Events} // Use EventsPage component
                 options={{ headerShown: false }}
             />
